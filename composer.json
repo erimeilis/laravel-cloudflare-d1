@@ -1,0 +1,42 @@
+{
+    "name": "erimeilis/laravel-cloudflare-d1",
+    "description": "Cloudflare D1 database driver for Laravel with Eloquent support and MySQL migration tools",
+    "keywords": ["laravel", "cloudflare", "d1", "database", "sqlite", "eloquent"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eri Meilis",
+            "email": "eri@redshoes.pro"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/database": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^11.0",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "EriMeilis\\CloudflareD1\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EriMeilis\\CloudflareD1\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EriMeilis\\CloudflareD1\\D1ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,5 +1,6 @@
 {
     "name": "erimeilis/laravel-cloudflare-d1",
+    "version": "0.1.0",
     "description": "Cloudflare D1 database driver for Laravel with Eloquent support and MySQL migration tools",
     "keywords": ["laravel", "cloudflare", "d1", "database", "sqlite", "eloquent"],
     "license": "MIT",

@@ -1,0 +1,59 @@
+{
+    "name": "helltelecom/laravel-cloudflare-d1",
+    "version": "1.0.0",
+    "description": "Production-ready Cloudflare D1 database driver for Laravel with full Eloquent support, 33x performance optimization, and complete MySQL migration tooling",
+    "keywords": [
+        "laravel",
+        "cloudflare",
+        "d1",
+        "database",
+        "sqlite",
+        "eloquent",
+        "mysql-migration",
+        "database-migration",
+        "edge-database",
+        "performance"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eri Meilis",
+            "email": "eri@redshoes.pro"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/database": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^11.0",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "EriMeilis\\CloudflareD1\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EriMeilis\\CloudflareD1\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EriMeilis\\CloudflareD1\\D1ServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage",
+        "setup-local-d1": "./tests/setup-local-d1.sh"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

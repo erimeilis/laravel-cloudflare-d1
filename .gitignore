@@ -1,0 +1,31 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+phpunit.xml
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# Laravel
+.env
+.env.backup
+.env.testing
+
+# Build artifacts
+build/
+dist/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+/BUGS_FIXED.md

@@ -109,37 +109,6 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a rename column command
-     */
-    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection): array|string
-    {
-        return sprintf(
-            'alter table %s rename column %s to %s',
-            $this->wrapTable($blueprint),
-            $this->wrap($command->from),
-            $this->wrap($command->to)
-        );
-    }
-
-    /**
-     * Compile a drop column command
-     *
-     * D1/SQLite supports DROP COLUMN but only ONE column per ALTER TABLE statement
-     * Multiple columns require separate ALTER TABLE statements
-     */
-    public function compileDropColumn(Blueprint $blueprint, Fluent $command, Connection $connection): array
-    {
-        $table = $this->wrapTable($blueprint);
-        $columns = $this->wrapArray($command->columns);
-
-        // Return array of statements, one per column
-        return array_map(
-            fn($column) => "alter table {$table} drop column {$column}",
-            $columns
-        );
-    }
-
-    /**
      * Create the column definition for a string type
      */
     protected function typeString(Fluent $column): string

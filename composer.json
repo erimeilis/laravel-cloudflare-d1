@@ -1,5 +1,5 @@
 {
-    "name": "helltelecom/laravel-cloudflare-d1",
+    "name": "erimeilis/laravel-cloudflare-d1",
     "version": "1.0.0",
     "description": "Production-ready Cloudflare D1 database driver for Laravel with full Eloquent support, 33x performance optimization, and complete MySQL migration tooling",
     "keywords": [

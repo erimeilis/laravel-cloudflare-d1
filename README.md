@@ -2,9 +2,12 @@
 
 **Supercharge your Laravel apps with Cloudflare's edge database**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Laravel 11+](https://img.shields.io/badge/Laravel-11%2B%20%7C%2012-red.svg)](https://laravel.com)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/erimeilis/laravel-cloudflare-d1)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/erimeilis/laravel-cloudflare-d1.svg)](https://packagist.org/packages/erimeilis/laravel-cloudflare-d1)
+[![Total Downloads](https://img.shields.io/packagist/dt/erimeilis/laravel-cloudflare-d1.svg)](https://packagist.org/packages/erimeilis/laravel-cloudflare-d1)
+[![Tests](https://github.com/erimeilis/laravel-cloudflare-d1/actions/workflows/tests.yml/badge.svg)](https://github.com/erimeilis/laravel-cloudflare-d1/actions/workflows/tests.yml)
+[![PHP Version](https://img.shields.io/packagist/php-v/erimeilis/laravel-cloudflare-d1.svg)](https://packagist.org/packages/erimeilis/laravel-cloudflare-d1)
+[![Laravel 11+](https://img.shields.io/badge/Laravel-11%20%7C%2012-FF2D20.svg)](https://laravel.com)
+[![License: MIT](https://img.shields.io/packagist/l/erimeilis/laravel-cloudflare-d1.svg)](https://opensource.org/licenses/MIT)
 
 > 🌍 Deploy your database to Cloudflare's global edge network
 > ⚡ 33x faster bulk operations with automatic query batching

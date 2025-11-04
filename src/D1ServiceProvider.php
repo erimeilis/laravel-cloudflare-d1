@@ -2,14 +2,14 @@
 
 namespace EriMeilis\CloudflareD1;
 
-use Illuminate\Support\ServiceProvider;
 use EriMeilis\CloudflareD1\Database\D1Connection;
 use EriMeilis\CloudflareD1\Database\D1Connector;
+use Illuminate\Support\ServiceProvider;
 
 class D1ServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services
+     * Register any application services.
      */
     public function register(): void
     {
@@ -21,7 +21,7 @@ class D1ServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services
+     * Bootstrap any application services.
      */
     public function boot(): void
     {
@@ -32,7 +32,7 @@ class D1ServiceProvider extends ServiceProvider
 
         // Register D1 database driver using extend() - only ONE registration method
         $this->app['db']->extend('d1', function ($config, $name) {
-            $connector = new D1Connector;
+            $connector = new D1Connector();
             $connection = new D1Connection(
                 $connector->connect($config),
                 $config['database'] ?? $name,

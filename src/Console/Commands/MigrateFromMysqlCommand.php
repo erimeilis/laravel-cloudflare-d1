@@ -9,7 +9,7 @@ use EriMeilis\CloudflareD1\Migration\SchemaConverter;
 use Illuminate\Console\Command;
 
 /**
- * Migrate MySQL database to Cloudflare D1
+ * Migrate MySQL database to Cloudflare D1.
  *
  * Usage:
  *   php artisan d1:migrate-from-mysql
@@ -63,7 +63,7 @@ class MigrateFromMysqlCommand extends Command
         $d1Client = $this->getD1Client();
 
         // Validate connections
-        if (! $this->validateConnections($mysqlConfig, $d1Client)) {
+        if (!$this->validateConnections($mysqlConfig, $d1Client)) {
             return self::FAILURE;
         }
 
@@ -78,7 +78,7 @@ class MigrateFromMysqlCommand extends Command
 
         $exporter->setChunkSize((int) $this->option('chunk-size'));
 
-        $importer = new DataImporter($d1Client, new SchemaConverter);
+        $importer = new DataImporter($d1Client, new SchemaConverter());
 
         // Get tables to migrate
         $tables = $this->getTablesToMigrate($exporter);
@@ -93,8 +93,8 @@ class MigrateFromMysqlCommand extends Command
         $this->showMigrationPlan($exporter, $tables);
 
         // Confirm before proceeding
-        if (! $this->option('force') && ! $this->option('dry-run')) {
-            if (! $this->confirm('Proceed with migration?')) {
+        if (!$this->option('force') && !$this->option('dry-run')) {
+            if (!$this->confirm('Proceed with migration?')) {
                 $this->info('Migration cancelled.');
 
                 return self::SUCCESS;
@@ -112,7 +112,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Get MySQL configuration
+     * Get MySQL configuration.
      */
     protected function getMysqlConfig(): array
     {
@@ -120,8 +120,8 @@ class MigrateFromMysqlCommand extends Command
         $defaultConfig = config("database.connections.{$defaultConnection}");
 
         return [
-            'host' => $this->option('host') ?? $defaultConfig['host'] ?? 'localhost',
-            'port' => (int) ($this->option('port') ?? $defaultConfig['port'] ?? 3306),
+            'host'     => $this->option('host') ?? $defaultConfig['host'] ?? 'localhost',
+            'port'     => (int) ($this->option('port') ?? $defaultConfig['port'] ?? 3306),
             'database' => $this->option('database') ?? $defaultConfig['database'],
             'username' => $this->option('username') ?? $defaultConfig['username'],
             'password' => $this->option('password') ?? $defaultConfig['password'] ?? '',
@@ -129,7 +129,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Get D1 API client
+     * Get D1 API client.
      */
     protected function getD1Client(): D1ApiClient
     {
@@ -141,7 +141,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Validate both MySQL and D1 connections
+     * Validate both MySQL and D1 connections.
      */
     protected function validateConnections(array $mysqlConfig, D1ApiClient $d1Client): bool
     {
@@ -157,7 +157,7 @@ class MigrateFromMysqlCommand extends Command
                 $mysqlConfig['port']
             );
 
-            if (! $exporter->validate()) {
+            if (!$exporter->validate()) {
                 $this->error('❌ Failed to connect to MySQL database');
 
                 return false;
@@ -175,7 +175,7 @@ class MigrateFromMysqlCommand extends Command
         try {
             $importer = new DataImporter($d1Client);
 
-            if (! $importer->validate()) {
+            if (!$importer->validate()) {
                 $this->error('❌ Failed to connect to Cloudflare D1');
 
                 return false;
@@ -194,7 +194,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Get list of tables to migrate
+     * Get list of tables to migrate.
      */
     protected function getTablesToMigrate(DataExporter $exporter): array
     {
@@ -223,7 +223,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Show migration plan
+     * Show migration plan.
      */
     protected function showMigrationPlan(DataExporter $exporter, array $tables): void
     {
@@ -239,14 +239,14 @@ class MigrateFromMysqlCommand extends Command
 
             $tableData[] = [
                 'table' => $table,
-                'rows' => number_format($rowCount),
+                'rows'  => number_format($rowCount),
             ];
         }
 
         $this->table(['Table', 'Rows'], $tableData);
 
-        $this->info("Total tables: ".count($tables));
-        $this->info("Total rows: ".number_format($totalRows));
+        $this->info('Total tables: '.count($tables));
+        $this->info('Total rows: '.number_format($totalRows));
 
         if ($this->option('structure-only')) {
             $this->warn('Mode: Structure only (no data)');
@@ -258,7 +258,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Execute the migration
+     * Execute the migration.
      */
     protected function executeMigration(DataExporter $exporter, DataImporter $importer, array $tables): int
     {
@@ -287,9 +287,9 @@ class MigrateFromMysqlCommand extends Command
 
         try {
             foreach ($tables as $table) {
-                $this->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
                 $this->info("Migrating table: {$table}");
-                $this->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
                 // Export table structure
                 $structure = $exporter->getTableStructure($table);
@@ -297,11 +297,11 @@ class MigrateFromMysqlCommand extends Command
                 $rowCount = $exporter->getTableCount($table);
 
                 // Create table (unless data-only mode)
-                if (! $dataOnly) {
+                if (!$dataOnly) {
                     $result = $importer->createTable($structure);
 
                     // Show warnings
-                    if (! empty($result['warnings'])) {
+                    if (!empty($result['warnings'])) {
                         foreach ($result['warnings'] as $warning) {
                             $this->warn("  ⚠️  {$warning}");
                         }
@@ -309,13 +309,13 @@ class MigrateFromMysqlCommand extends Command
                 }
 
                 // Import data (unless structure-only mode)
-                if (! $structureOnly && $rowCount > 0) {
-                    $this->info("  📤 Exporting data from MySQL...");
+                if (!$structureOnly && $rowCount > 0) {
+                    $this->info('  📤 Exporting data from MySQL...');
 
                     // Use generator for memory efficiency
                     $dataGenerator = $exporter->exportTableForBatchInsert($table);
 
-                    $this->info("  📥 Importing data to D1...");
+                    $this->info('  📥 Importing data to D1...');
 
                     $importer->importFromGenerator($table, $columns, $dataGenerator, $rowCount);
                 }
@@ -344,7 +344,7 @@ class MigrateFromMysqlCommand extends Command
     }
 
     /**
-     * Show migration statistics
+     * Show migration statistics.
      */
     protected function showStatistics(DataImporter $importer): void
     {
@@ -354,10 +354,10 @@ class MigrateFromMysqlCommand extends Command
         $this->info('📊 Migration Statistics:');
         $this->info("   Tables created: {$stats['tables_created']}");
         $this->info("   Indexes created: {$stats['indexes_created']}");
-        $this->info("   Rows imported: ".number_format($stats['rows_imported']));
+        $this->info('   Rows imported: '.number_format($stats['rows_imported']));
         $this->info("   Batches executed: {$stats['batches_executed']}");
 
-        if (! empty($stats['errors'])) {
+        if (!empty($stats['errors'])) {
             $this->newLine();
             $this->error('⚠️  Errors encountered:');
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 use EriMeilis\CloudflareD1\Http\D1ApiClient;
 use EriMeilis\CloudflareD1\Migration\DataImporter;
 use EriMeilis\CloudflareD1\Migration\SchemaConverter;
 
 /**
- * Migration Tooling Test Script
+ * Migration Tooling Test Script.
  *
  * Tests the complete MySQL to D1 migration workflow including:
  * - SchemaConverter
@@ -24,7 +24,6 @@ use EriMeilis\CloudflareD1\Migration\SchemaConverter;
  *   CLOUDFLARE_D1_DATABASE_ID
  *   CLOUDFLARE_D1_API_TOKEN
  */
-
 echo "\n";
 echo "╔════════════════════════════════════════════════════════════════╗\n";
 echo "║          Laravel Cloudflare D1 - Migration Test                ║\n";
@@ -41,9 +40,9 @@ if (!$accountId || !$databaseId || !$apiToken) {
     $testD1 = false;
 } else {
     echo "📋 D1 Configuration:\n";
-    echo "   Account ID: " . substr($accountId, 0, 8) . "...\n";
-    echo "   Database ID: " . substr($databaseId, 0, 8) . "...\n";
-    echo "   API Token: " . substr($apiToken, 0, 8) . "...\n";
+    echo '   Account ID: '.substr($accountId, 0, 8)."...\n";
+    echo '   Database ID: '.substr($databaseId, 0, 8)."...\n";
+    echo '   API Token: '.substr($apiToken, 0, 8)."...\n";
     echo "\n";
     $testD1 = true;
 }
@@ -62,7 +61,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 try {
     $converter = new SchemaConverter();
 
-    $mysqlSchema = "
+    $mysqlSchema = '
         CREATE TABLE products (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -71,15 +70,15 @@ try {
             stock INT DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    ";
+    ';
 
     $sqliteSchema = $converter->convert($mysqlSchema);
 
     echo "MySQL Schema:\n";
-    echo trim($mysqlSchema) . "\n\n";
+    echo trim($mysqlSchema)."\n\n";
 
     echo "Converted SQLite Schema:\n";
-    echo $sqliteSchema . "\n\n";
+    echo $sqliteSchema."\n\n";
 
     $warnings = $converter->getWarnings();
     if (!empty($warnings)) {
@@ -93,9 +92,9 @@ try {
     // Verify conversions
     $checks = [
         'INTEGER PRIMARY KEY AUTOINCREMENT' => 'AUTO_INCREMENT converted',
-        'TEXT' => 'VARCHAR/TEXT converted',
-        'REAL' => 'DECIMAL converted',
-        "DEFAULT (datetime('now'))" => 'CURRENT_TIMESTAMP converted',
+        'TEXT'                              => 'VARCHAR/TEXT converted',
+        'REAL'                              => 'DECIMAL converted',
+        "DEFAULT (datetime('now'))"         => 'CURRENT_TIMESTAMP converted',
     ];
 
     $allChecked = true;
@@ -144,7 +143,7 @@ try {
     echo "   status ENUM('pending', 'processing', 'shipped', 'delivered')\n\n";
 
     echo "Converted SQLite:\n";
-    echo $sqliteSchema . "\n\n";
+    echo $sqliteSchema."\n\n";
 
     // Verify CHECK constraint
     if (stripos($sqliteSchema, 'CHECK') !== false &&
@@ -188,7 +187,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 try {
     $converter = new SchemaConverter();
 
-    $mysqlSchema = "
+    $mysqlSchema = '
         CREATE TABLE order_items (
             id INT AUTO_INCREMENT PRIMARY KEY,
             order_id INT NOT NULL,
@@ -197,7 +196,7 @@ try {
             FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
         )
-    ";
+    ';
 
     $sqliteSchema = $converter->convert($mysqlSchema);
 
@@ -206,7 +205,7 @@ try {
     echo "   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT\n\n";
 
     echo "Converted SQLite:\n";
-    echo $sqliteSchema . "\n\n";
+    echo $sqliteSchema."\n\n";
 
     // Verify foreign keys
     $fkCount = substr_count($sqliteSchema, 'FOREIGN KEY');
@@ -238,7 +237,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 try {
     $converter = new SchemaConverter();
 
-    $mysqlSchema = "
+    $mysqlSchema = '
         CREATE TABLE users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
@@ -248,7 +247,7 @@ try {
             UNIQUE INDEX idx_email (email),
             FULLTEXT INDEX idx_search (name)
         )
-    ";
+    ';
 
     $sqliteSchema = $converter->convert($mysqlSchema);
     $parsed = $converter->parseCreateTable($mysqlSchema);
@@ -260,7 +259,7 @@ try {
     echo "   FULLTEXT INDEX idx_search (name)\n\n";
 
     echo "Converted SQLite Table:\n";
-    echo $sqliteSchema . "\n\n";
+    echo $sqliteSchema."\n\n";
 
     echo "Separate Index Statements:\n";
     foreach ($indexStatements as $stmt) {
@@ -298,9 +297,9 @@ try {
         $testsPassed++;
     } else {
         echo "❌ Index conversion incomplete\n";
-        echo "   Regular: " . ($hasRegularIndex ? 'Yes' : 'No') . "\n";
-        echo "   Unique: " . ($hasUniqueIndex ? 'Yes' : 'No') . "\n";
-        echo "   FULLTEXT warning: " . ($hasFulltextWarning ? 'Yes' : 'No') . "\n\n";
+        echo '   Regular: '.($hasRegularIndex ? 'Yes' : 'No')."\n";
+        echo '   Unique: '.($hasUniqueIndex ? 'Yes' : 'No')."\n";
+        echo '   FULLTEXT warning: '.($hasFulltextWarning ? 'Yes' : 'No')."\n\n";
         $testsFailed++;
     }
 } catch (Exception $e) {
@@ -347,7 +346,7 @@ if ($testD1) {
         }
 
         // Create test table with data
-        $mysqlSchema = "
+        $mysqlSchema = '
             CREATE TABLE migration_test_products (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
@@ -355,7 +354,7 @@ if ($testD1) {
                 in_stock BOOLEAN DEFAULT TRUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        ";
+        ';
 
         echo "📝 Creating table from MySQL schema...\n";
         $result = $importer->createTable($mysqlSchema);
@@ -383,18 +382,18 @@ if ($testD1) {
             $testData
         );
 
-        echo "✅ Imported " . count($testData) . " rows\n\n";
+        echo '✅ Imported '.count($testData)." rows\n\n";
 
         // Verify data
         echo "🔍 Verifying data...\n";
-        $result = $d1Client->raw("SELECT COUNT(*) as count FROM migration_test_products");
+        $result = $d1Client->raw('SELECT COUNT(*) as count FROM migration_test_products');
         $count = $result[0]['results']['rows'][0][0] ?? 0;
 
         if ($count == count($testData)) {
             echo "✅ Row count matches ({$count})\n";
 
             // Query a specific row
-            $result = $d1Client->raw("SELECT * FROM migration_test_products WHERE id = ?", [1]);
+            $result = $d1Client->raw('SELECT * FROM migration_test_products WHERE id = ?', [1]);
             $rows = $result[0]['results']['rows'] ?? [];
 
             if (!empty($rows)) {
@@ -411,14 +410,13 @@ if ($testD1) {
                 $testsFailed++;
             }
         } else {
-            echo "❌ Row count mismatch: Expected " . count($testData) . ", Got {$count}\n\n";
+            echo '❌ Row count mismatch: Expected '.count($testData).", Got {$count}\n\n";
             $testsFailed++;
         }
 
         // Cleanup
         $importer->dropTable('migration_test_products');
         echo "🗑️  Cleaned up test table\n\n";
-
     } catch (Exception $e) {
         echo "❌ Test 5 FAILED: {$e->getMessage()}\n\n";
         $testsFailed++;
@@ -441,12 +439,12 @@ if ($testD1) {
         }
 
         // Create test table
-        $mysqlSchema = "
+        $mysqlSchema = '
             CREATE TABLE batch_test (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 value VARCHAR(255) NOT NULL
             )
-        ";
+        ';
 
         $importer->createTable($mysqlSchema);
         echo "✅ Table created\n\n";
@@ -457,7 +455,7 @@ if ($testD1) {
         $batchData = [];
         for ($i = 1; $i <= 20; $i++) {
             $batchData[] = [
-                'id' => $i,
+                'id'    => $i,
                 'value' => "Batch Item {$i}",
             ];
         }
@@ -467,11 +465,11 @@ if ($testD1) {
         $duration = (microtime(true) - $start) * 1000;
 
         echo "✅ Batch import completed\n";
-        echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-        echo "📈 Average per row: " . number_format($duration / 20, 2) . "ms\n\n";
+        echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+        echo '📈 Average per row: '.number_format($duration / 20, 2)."ms\n\n";
 
         // Verify count
-        $result = $d1Client->raw("SELECT COUNT(*) as count FROM batch_test");
+        $result = $d1Client->raw('SELECT COUNT(*) as count FROM batch_test');
         $count = $result[0]['results']['rows'][0][0] ?? 0;
 
         if ($count == 20) {
@@ -485,7 +483,6 @@ if ($testD1) {
 
         // Cleanup
         $importer->dropTable('batch_test');
-
     } catch (Exception $e) {
         echo "❌ Test 6 FAILED: {$e->getMessage()}\n\n";
         $testsFailed++;

@@ -2,10 +2,10 @@
 
 namespace EriMeilis\CloudflareD1\Database;
 
-use PDO;
-use PDOException;
 use EriMeilis\CloudflareD1\Database\Batch\QueryBatcher;
 use EriMeilis\CloudflareD1\Http\D1ApiClient;
+use PDO;
+use PDOException;
 
 class D1Pdo extends PDO
 {
@@ -27,15 +27,15 @@ class D1Pdo extends PDO
 
         // Set default attributes
         $this->attributes = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_CASE => PDO::CASE_NATURAL,
-            PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
+            PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_CASE              => PDO::CASE_NATURAL,
+            PDO::ATTR_ORACLE_NULLS      => PDO::NULL_NATURAL,
             PDO::ATTR_STRINGIFY_FETCHES => false,
         ];
     }
 
     /**
-     * Prepare a statement for execution
+     * Prepare a statement for execution.
      */
     public function prepare(string $query, array $options = []): D1PdoStatement|false
     {
@@ -51,13 +51,13 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Execute an SQL statement and return the number of affected rows
+     * Execute an SQL statement and return the number of affected rows.
      */
     public function exec(string $statement): int|false
     {
         try {
             $stmt = $this->prepare($statement);
-            if (! $stmt) {
+            if (!$stmt) {
                 return false;
             }
 
@@ -74,13 +74,13 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Execute a query and return a statement
+     * Execute a query and return a statement.
      */
     public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): D1PdoStatement|false
     {
         try {
             $stmt = $this->prepare($query);
-            if (! $stmt) {
+            if (!$stmt) {
                 return false;
             }
 
@@ -101,7 +101,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Begin a transaction (enables query batching for performance)
+     * Begin a transaction (enables query batching for performance).
      */
     public function beginTransaction(): bool
     {
@@ -112,7 +112,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Commit a transaction (flushes batched queries)
+     * Commit a transaction (flushes batched queries).
      */
     public function commit(): bool
     {
@@ -130,7 +130,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Roll back a transaction (clears batched queries without executing)
+     * Roll back a transaction (clears batched queries without executing).
      */
     public function rollBack(): bool
     {
@@ -144,7 +144,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Check if currently in a transaction
+     * Check if currently in a transaction.
      */
     public function inTransaction(): bool
     {
@@ -152,7 +152,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Get the ID of the last inserted row
+     * Get the ID of the last inserted row.
      */
     public function lastInsertId(?string $name = null): string|false
     {
@@ -160,7 +160,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Set the last insert ID (called by D1PdoStatement after INSERT)
+     * Set the last insert ID (called by D1PdoStatement after INSERT).
      */
     public function setLastInsertId(?string $id): void
     {
@@ -168,7 +168,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Get the D1 API client
+     * Get the D1 API client.
      */
     public function getApiClient(): D1ApiClient
     {
@@ -176,7 +176,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Get the query batcher
+     * Get the query batcher.
      */
     public function getBatcher(): QueryBatcher
     {
@@ -184,7 +184,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Set a PDO attribute
+     * Set a PDO attribute.
      */
     public function setAttribute(int $attribute, mixed $value): bool
     {
@@ -194,7 +194,7 @@ class D1Pdo extends PDO
     }
 
     /**
-     * Get a PDO attribute
+     * Get a PDO attribute.
      */
     public function getAttribute(int $attribute): mixed
     {

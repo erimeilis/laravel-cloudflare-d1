@@ -33,7 +33,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Bind a parameter to the specified variable
+     * Bind a parameter to the specified variable.
      */
     public function bindParam(
         string|int $param,
@@ -48,7 +48,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Bind a value to a parameter
+     * Bind a value to a parameter.
      */
     public function bindValue(string|int $param, mixed $value, int $type = PDO::PARAM_STR): bool
     {
@@ -58,7 +58,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Execute the prepared statement
+     * Execute the prepared statement.
      */
     public function execute(?array $params = null): bool
     {
@@ -102,7 +102,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Process API response and extract results
+     * Process API response and extract results.
      */
     protected function processApiResponse(array $response): void
     {
@@ -122,7 +122,7 @@ class D1PdoStatement extends PDOStatement
         $rows = $result['results']['rows'] ?? $result['results'] ?? [];
 
         // Convert arrays to associative arrays using column names
-        if (! empty($this->columnNames) && is_array($rows)) {
+        if (!empty($this->columnNames) && is_array($rows)) {
             $this->results = array_map(function ($row) {
                 return array_combine($this->columnNames, $row);
             }, $rows);
@@ -147,7 +147,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Fetch a single row
+     * Fetch a single row.
      */
     public function fetch(
         int $mode = PDO::FETCH_DEFAULT,
@@ -168,7 +168,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Fetch all rows
+     * Fetch all rows.
      */
     public function fetchAll(int $mode = PDO::FETCH_DEFAULT, mixed ...$args): array
     {
@@ -184,7 +184,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Fetch a single column from the next row
+     * Fetch a single column from the next row.
      */
     public function fetchColumn(int $column = 0): mixed
     {
@@ -194,21 +194,21 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Format a row based on fetch mode
+     * Format a row based on fetch mode.
      */
     protected function formatRow(array $row, int $mode): mixed
     {
         return match ($mode) {
             PDO::FETCH_ASSOC => $row,
-            PDO::FETCH_NUM => array_values($row),
-            PDO::FETCH_BOTH => $row + array_values($row),
-            PDO::FETCH_OBJ => (object) $row,
-            default => $row,
+            PDO::FETCH_NUM   => array_values($row),
+            PDO::FETCH_BOTH  => $row + array_values($row),
+            PDO::FETCH_OBJ   => (object) $row,
+            default          => $row,
         };
     }
 
     /**
-     * Get the number of rows affected by the last statement
+     * Get the number of rows affected by the last statement.
      */
     public function rowCount(): int
     {
@@ -216,7 +216,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Get the number of columns in the result set
+     * Get the number of columns in the result set.
      */
     public function columnCount(): int
     {
@@ -224,7 +224,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Set the fetch mode
+     * Set the fetch mode.
      */
     public function setFetchMode(int $mode, mixed ...$args): true
     {
@@ -235,7 +235,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Check if bindings use named parameters
+     * Check if bindings use named parameters.
      */
     protected function hasNamedParameters(array $bindings): bool
     {
@@ -249,7 +249,7 @@ class D1PdoStatement extends PDOStatement
     }
 
     /**
-     * Convert named parameters (:param) to positional (?)
+     * Convert named parameters (:param) to positional (?).
      */
     protected function convertNamedToPositional(string $sql, array $bindings): array
     {

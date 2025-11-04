@@ -2,12 +2,9 @@
 
 namespace EriMeilis\CloudflareD1\Tests;
 
-use Orchestra\Testbench\TestCase as Orchestra;
-use EriMeilis\CloudflareD1\D1ServiceProvider;
-use EriMeilis\CloudflareD1\Database\D1Connector;
 use EriMeilis\CloudflareD1\Database\D1Pdo;
 use EriMeilis\CloudflareD1\Tests\Mock\LocalD1ApiClient;
-use Illuminate\Database\Connection;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
@@ -36,7 +33,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Get package providers - Don't use the real provider, we register manually
+     * Get package providers - Don't use the real provider, we register manually.
      */
     protected function getPackageProviders($app): array
     {
@@ -44,26 +41,26 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Define environment setup
+     * Define environment setup.
      */
     protected function defineEnvironment($app): void
     {
         // Use local D1 for testing
         $app['config']->set('database.default', 'd1');
         $app['config']->set('database.connections.d1', [
-            'driver' => 'd1',
-            'account_id' => 'test-account',
-            'database_id' => 'test-db-id',
-            'api_token' => 'test-token',
-            'prefix' => '',
-            'batch_enabled' => true,
-            'batch_size' => 10,
+            'driver'           => 'd1',
+            'account_id'       => 'test-account',
+            'database_id'      => 'test-db-id',
+            'api_token'        => 'test-token',
+            'prefix'           => '',
+            'batch_enabled'    => true,
+            'batch_size'       => 10,
             'use_raw_endpoint' => true,
         ]);
     }
 
     /**
-     * Clean up database after tests
+     * Clean up database after tests.
      */
     protected function tearDown(): void
     {

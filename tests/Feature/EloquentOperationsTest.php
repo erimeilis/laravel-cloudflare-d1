@@ -3,9 +3,9 @@
 namespace EriMeilis\CloudflareD1\Tests\Feature;
 
 use EriMeilis\CloudflareD1\Tests\TestCase;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class EloquentOperationsTest extends TestCase
 {
@@ -41,12 +41,12 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Basic model creation
+     * Test: Basic model creation.
      */
     public function test_can_create_model(): void
     {
         $user = TestUser::create([
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -56,7 +56,7 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Model reading/querying
+     * Test: Model reading/querying.
      */
     public function test_can_read_models(): void
     {
@@ -71,7 +71,7 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Model updates
+     * Test: Model updates.
      */
     public function test_can_update_model(): void
     {
@@ -84,7 +84,7 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Model deletion
+     * Test: Model deletion.
      */
     public function test_can_delete_model(): void
     {
@@ -97,19 +97,19 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Has many relationship
+     * Test: Has many relationship.
      */
     public function test_has_many_relationship_works(): void
     {
         $user = TestUser::create(['name' => 'John', 'email' => 'john@example.com']);
-        
+
         $user->posts()->create([
-            'title' => 'First Post',
+            'title'   => 'First Post',
             'content' => 'Content here',
         ]);
 
         $user->posts()->create([
-            'title' => 'Second Post',
+            'title'   => 'Second Post',
             'content' => 'More content',
         ]);
 
@@ -118,14 +118,14 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Belongs to relationship
+     * Test: Belongs to relationship.
      */
     public function test_belongs_to_relationship_works(): void
     {
         $user = TestUser::create(['name' => 'John', 'email' => 'john@example.com']);
-        
+
         $post = $user->posts()->create([
-            'title' => 'Test Post',
+            'title'   => 'Test Post',
             'content' => 'Content',
         ]);
 
@@ -134,7 +134,7 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Eager loading (N+1 prevention)
+     * Test: Eager loading (N+1 prevention).
      */
     public function test_eager_loading_works(): void
     {
@@ -147,9 +147,9 @@ class EloquentOperationsTest extends TestCase
         \DB::enableQueryLog();
 
         $users = TestUser::with('posts')->get();
-        
+
         $queryLog = \DB::getQueryLog();
-        
+
         // Should be 2 queries: 1 for users, 1 for posts
         // Without eager loading it would be 1 + N queries
         $this->assertLessThanOrEqual(3, count($queryLog));
@@ -160,25 +160,25 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Has many through relationship
+     * Test: Has many through relationship.
      */
     public function test_has_many_through_relationship_works(): void
     {
         $user = TestUser::create(['name' => 'John', 'email' => 'john@example.com']);
-        
+
         $post = $user->posts()->create([
-            'title' => 'Test Post',
+            'title'   => 'Test Post',
             'content' => 'Content',
         ]);
 
         $post->comments()->create([
             'user_id' => $user->id,
-            'body' => 'Comment 1',
+            'body'    => 'Comment 1',
         ]);
 
         $post->comments()->create([
             'user_id' => $user->id,
-            'body' => 'Comment 2',
+            'body'    => 'Comment 2',
         ]);
 
         // User has comments through posts
@@ -186,12 +186,12 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Mass assignment
+     * Test: Mass assignment.
      */
     public function test_mass_assignment_works(): void
     {
         $data = [
-            'name' => 'John',
+            'name'  => 'John',
             'email' => 'john@example.com',
         ];
 
@@ -202,13 +202,13 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Model attribute casting
+     * Test: Model attribute casting.
      */
     public function test_attribute_casting_works(): void
     {
         $user = TestUser::create([
-            'name' => 'John',
-            'email' => 'john@example.com',
+            'name'   => 'John',
+            'email'  => 'john@example.com',
             'active' => true,
         ]);
 
@@ -217,20 +217,20 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Cascade delete through relationships
+     * Test: Cascade delete through relationships.
      */
     public function test_cascade_delete_works(): void
     {
         $user = TestUser::create(['name' => 'John', 'email' => 'john@example.com']);
-        
+
         $post = $user->posts()->create([
-            'title' => 'Test Post',
+            'title'   => 'Test Post',
             'content' => 'Content',
         ]);
 
         $post->comments()->create([
             'user_id' => $user->id,
-            'body' => 'Comment',
+            'body'    => 'Comment',
         ]);
 
         $postId = $post->id;
@@ -243,7 +243,7 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Query scopes
+     * Test: Query scopes.
      */
     public function test_query_scopes_work(): void
     {
@@ -257,14 +257,14 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Chunking large result sets
+     * Test: Chunking large result sets.
      */
     public function test_can_chunk_results(): void
     {
         // Create 25 users
         for ($i = 1; $i <= 25; $i++) {
             TestUser::create([
-                'name' => "User {$i}",
+                'name'  => "User {$i}",
                 'email' => "user{$i}@example.com",
             ]);
         }
@@ -279,14 +279,14 @@ class EloquentOperationsTest extends TestCase
     }
 
     /**
-     * Test: Pagination
+     * Test: Pagination.
      */
     public function test_pagination_works(): void
     {
         // Create 15 users
         for ($i = 1; $i <= 15; $i++) {
             TestUser::create([
-                'name' => "User {$i}",
+                'name'  => "User {$i}",
                 'email' => "user{$i}@example.com",
             ]);
         }

@@ -6,7 +6,7 @@ use EriMeilis\CloudflareD1\Http\D1ApiClient;
 use RuntimeException;
 
 /**
- * DataImporter - Import data into Cloudflare D1 database
+ * DataImporter - Import data into Cloudflare D1 database.
  *
  * Features:
  * - Batch INSERT operations for performance
@@ -25,34 +25,34 @@ class DataImporter
     protected int $maxParameters = 100;
 
     /**
-     * Progress callback function
+     * Progress callback function.
      *
      * @var callable|null
      */
     protected $progressCallback = null;
 
     /**
-     * Statistics tracking
+     * Statistics tracking.
      */
     protected array $stats = [
-        'tables_created' => 0,
-        'indexes_created' => 0,
-        'rows_imported' => 0,
+        'tables_created'   => 0,
+        'indexes_created'  => 0,
+        'rows_imported'    => 0,
         'batches_executed' => 0,
-        'errors' => [],
+        'errors'           => [],
     ];
 
     /**
-     * Create a new DataImporter instance
+     * Create a new DataImporter instance.
      */
     public function __construct(D1ApiClient $apiClient, ?SchemaConverter $schemaConverter = null)
     {
         $this->apiClient = $apiClient;
-        $this->schemaConverter = $schemaConverter ?? new SchemaConverter;
+        $this->schemaConverter = $schemaConverter ?? new SchemaConverter();
     }
 
     /**
-     * Set maximum parameters per query
+     * Set maximum parameters per query.
      */
     public function setMaxParameters(int $max): self
     {
@@ -62,7 +62,7 @@ class DataImporter
     }
 
     /**
-     * Set progress callback
+     * Set progress callback.
      *
      * Callback receives: function(string $operation, string $detail, int $current, int $total)
      */
@@ -74,7 +74,7 @@ class DataImporter
     }
 
     /**
-     * Get import statistics
+     * Get import statistics.
      */
     public function getStats(): array
     {
@@ -82,21 +82,21 @@ class DataImporter
     }
 
     /**
-     * Reset statistics
+     * Reset statistics.
      */
     public function resetStats(): void
     {
         $this->stats = [
-            'tables_created' => 0,
-            'indexes_created' => 0,
-            'rows_imported' => 0,
+            'tables_created'   => 0,
+            'indexes_created'  => 0,
+            'rows_imported'    => 0,
             'batches_executed' => 0,
-            'errors' => [],
+            'errors'           => [],
         ];
     }
 
     /**
-     * Create table from MySQL CREATE TABLE statement
+     * Create table from MySQL CREATE TABLE statement.
      */
     public function createTable(string $mysqlCreateTable): array
     {
@@ -124,18 +124,18 @@ class DataImporter
         }
 
         return [
-            'table' => $sqliteCreateTable,
-            'indexes' => $indexStatements,
+            'table'    => $sqliteCreateTable,
+            'indexes'  => $indexStatements,
             'warnings' => $this->schemaConverter->getWarnings(),
         ];
     }
 
     /**
-     * Import data into a table
+     * Import data into a table.
      *
-     * @param  string  $table  Table name
-     * @param  array  $columns  Column names
-     * @param  array  $rows  Array of row data
+     * @param string $table   Table name
+     * @param array  $columns Column names
+     * @param array  $rows    Array of row data
      */
     public function importData(string $table, array $columns, array $rows): void
     {
@@ -175,7 +175,7 @@ class DataImporter
     }
 
     /**
-     * Execute a batch INSERT operation
+     * Execute a batch INSERT operation.
      */
     protected function executeBatchInsert(string $table, array $columns, array $rows): void
     {
@@ -194,7 +194,7 @@ class DataImporter
             $params = array_values($row);
 
             $statements[] = [
-                'sql' => $sql,
+                'sql'    => $sql,
                 'params' => $params,
             ];
         }
@@ -207,10 +207,10 @@ class DataImporter
             $this->stats['rows_imported'] += count($rows);
         } catch (\Exception $e) {
             $this->stats['errors'][] = [
-                'table' => $table,
+                'table'     => $table,
                 'operation' => 'batch_insert',
-                'rows' => count($rows),
-                'message' => $e->getMessage(),
+                'rows'      => count($rows),
+                'message'   => $e->getMessage(),
             ];
 
             throw new RuntimeException(
@@ -222,9 +222,9 @@ class DataImporter
     }
 
     /**
-     * Import entire table (structure + data)
+     * Import entire table (structure + data).
      *
-     * @param  array  $tableData  ['structure' => string, 'columns' => array, 'data' => array]
+     * @param array $tableData ['structure' => string, 'columns' => array, 'data' => array]
      */
     public function importTable(array $tableData): void
     {
@@ -232,7 +232,7 @@ class DataImporter
         $createResult = $this->createTable($tableData['structure']);
 
         // Import data in batches
-        if (! empty($tableData['data'])) {
+        if (!empty($tableData['data'])) {
             $this->importData(
                 $tableData['name'],
                 $tableData['columns'],
@@ -242,9 +242,9 @@ class DataImporter
     }
 
     /**
-     * Import entire database from DataExporter format
+     * Import entire database from DataExporter format.
      *
-     * @param  array  $exportData  Output from DataExporter::exportDatabase()
+     * @param array $exportData Output from DataExporter::exportDatabase()
      */
     public function importDatabase(array $exportData): void
     {
@@ -266,9 +266,9 @@ class DataImporter
                 }
             } catch (\Exception $e) {
                 $this->stats['errors'][] = [
-                    'table' => $tableName,
+                    'table'     => $tableName,
                     'operation' => 'import_table',
-                    'message' => $e->getMessage(),
+                    'message'   => $e->getMessage(),
                 ];
 
                 // Re-throw to stop import on error
@@ -282,12 +282,12 @@ class DataImporter
     }
 
     /**
-     * Import data from generator (memory efficient for large datasets)
+     * Import data from generator (memory efficient for large datasets).
      *
-     * @param  string  $table  Table name
-     * @param  array  $columns  Column names
-     * @param  \Generator  $dataGenerator  Generator yielding row batches
-     * @param  int  $totalRows  Total rows (for progress reporting)
+     * @param string     $table         Table name
+     * @param array      $columns       Column names
+     * @param \Generator $dataGenerator Generator yielding row batches
+     * @param int        $totalRows     Total rows (for progress reporting)
      */
     public function importFromGenerator(string $table, array $columns, \Generator $dataGenerator, int $totalRows): void
     {
@@ -306,7 +306,7 @@ class DataImporter
     }
 
     /**
-     * Truncate a table
+     * Truncate a table.
      */
     public function truncateTable(string $table): void
     {
@@ -319,7 +319,7 @@ class DataImporter
     }
 
     /**
-     * Drop a table
+     * Drop a table.
      */
     public function dropTable(string $table): void
     {
@@ -332,7 +332,7 @@ class DataImporter
     }
 
     /**
-     * Check if table exists
+     * Check if table exists.
      */
     public function tableExists(string $table): bool
     {
@@ -342,14 +342,14 @@ class DataImporter
                 [$table]
             );
 
-            return ! empty($result[0]['results']['rows'] ?? []);
+            return !empty($result[0]['results']['rows'] ?? []);
         } catch (\Exception $e) {
             return false;
         }
     }
 
     /**
-     * Get list of all tables in D1 database
+     * Get list of all tables in D1 database.
      */
     public function getTables(): array
     {
@@ -363,7 +363,7 @@ class DataImporter
     }
 
     /**
-     * Validate D1 connection
+     * Validate D1 connection.
      */
     public function validate(): bool
     {
@@ -377,7 +377,7 @@ class DataImporter
     }
 
     /**
-     * Get the D1 API client
+     * Get the D1 API client.
      */
     public function getApiClient(): D1ApiClient
     {

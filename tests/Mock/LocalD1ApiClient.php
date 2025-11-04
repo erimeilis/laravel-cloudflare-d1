@@ -7,7 +7,7 @@ use PDO;
 
 /**
  * Local D1 API Client for testing
- * Uses in-memory SQLite instead of HTTP calls to Cloudflare API
+ * Uses in-memory SQLite instead of HTTP calls to Cloudflare API.
  */
 class LocalD1ApiClient extends D1ApiClient
 {
@@ -31,7 +31,7 @@ class LocalD1ApiClient extends D1ApiClient
     }
 
     /**
-     * Reset the shared database (for test isolation)
+     * Reset the shared database (for test isolation).
      */
     public static function resetDatabase(): void
     {
@@ -39,7 +39,7 @@ class LocalD1ApiClient extends D1ApiClient
     }
 
     /**
-     * Execute query locally using SQLite
+     * Execute query locally using SQLite.
      */
     public function query(string $sql, array $bindings = []): array
     {
@@ -47,7 +47,7 @@ class LocalD1ApiClient extends D1ApiClient
     }
 
     /**
-     * Execute raw query locally
+     * Execute raw query locally.
      */
     public function raw(string $sql, array $bindings = []): array
     {
@@ -55,7 +55,7 @@ class LocalD1ApiClient extends D1ApiClient
     }
 
     /**
-     * Execute batch locally
+     * Execute batch locally.
      */
     public function batch(array $statements): array
     {
@@ -64,7 +64,7 @@ class LocalD1ApiClient extends D1ApiClient
         foreach ($statements as $statement) {
             $sql = is_array($statement) ? $statement['sql'] : $statement;
             $params = is_array($statement) ? ($statement['params'] ?? []) : [];
-            
+
             $results[] = $this->executeLocally($sql, $params);
         }
 
@@ -72,7 +72,7 @@ class LocalD1ApiClient extends D1ApiClient
     }
 
     /**
-     * Execute SQL against local SQLite
+     * Execute SQL against local SQLite.
      */
     protected function executeLocally(string $sql, array $bindings = []): array
     {
@@ -87,8 +87,8 @@ class LocalD1ApiClient extends D1ApiClient
             return [
                 [
                     'success' => true,
-                    'meta' => [
-                        'rows_read' => count($results),
+                    'meta'    => [
+                        'rows_read'    => count($results),
                         'rows_written' => 0,
                     ],
                     'results' => $results,
@@ -100,10 +100,10 @@ class LocalD1ApiClient extends D1ApiClient
         return [
             [
                 'success' => true,
-                'meta' => [
-                    'rows_read' => 0,
+                'meta'    => [
+                    'rows_read'    => 0,
                     'rows_written' => $stmt->rowCount(),
-                    'last_row_id' => $this->pdo->lastInsertId(),
+                    'last_row_id'  => $this->pdo->lastInsertId(),
                 ],
                 'results' => [],
             ],

@@ -3,9 +3,9 @@
 namespace EriMeilis\CloudflareD1\Tests\Feature;
 
 use EriMeilis\CloudflareD1\Tests\TestCase;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BatchOperationsTest extends TestCase
 {
@@ -22,7 +22,7 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Transaction with multiple inserts gets batched
+     * Test: Transaction with multiple inserts gets batched.
      */
     public function test_transaction_batches_multiple_inserts(): void
     {
@@ -30,7 +30,7 @@ class BatchOperationsTest extends TestCase
 
         for ($i = 1; $i <= 10; $i++) {
             DB::table('users')->insert([
-                'name' => "User {$i}",
+                'name'  => "User {$i}",
                 'email' => "user{$i}@example.com",
             ]);
         }
@@ -41,19 +41,19 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Transaction rollback works
+     * Test: Transaction rollback works.
      */
     public function test_transaction_rollback_works(): void
     {
         DB::beginTransaction();
 
         DB::table('users')->insert([
-            'name' => 'John',
+            'name'  => 'John',
             'email' => 'john@example.com',
         ]);
 
         DB::table('users')->insert([
-            'name' => 'Jane',
+            'name'  => 'Jane',
             'email' => 'jane@example.com',
         ]);
 
@@ -63,7 +63,7 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Nested transactions (savepoints)
+     * Test: Nested transactions (savepoints).
      */
     public function test_nested_transactions_work(): void
     {
@@ -86,14 +86,14 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Transaction with exception rolls back
+     * Test: Transaction with exception rolls back.
      */
     public function test_transaction_with_exception_rolls_back(): void
     {
         try {
             DB::transaction(function () {
                 DB::table('users')->insert(['name' => 'John', 'email' => 'john@example.com']);
-                
+
                 // Force an error
                 throw new \Exception('Test error');
             });
@@ -105,7 +105,7 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Multiple operations in single transaction
+     * Test: Multiple operations in single transaction.
      */
     public function test_mixed_operations_in_transaction(): void
     {
@@ -115,10 +115,10 @@ class BatchOperationsTest extends TestCase
         DB::transaction(function () {
             // Insert
             DB::table('users')->insert(['name' => 'New User', 'email' => 'new@example.com']);
-            
+
             // Update
             DB::table('users')->where('name', 'Original')->update(['name' => 'Updated']);
-            
+
             // Delete would go here too
         });
 
@@ -128,7 +128,7 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Large batch insert (respecting 100 param limit)
+     * Test: Large batch insert (respecting 100 param limit).
      */
     public function test_large_batch_insert(): void
     {
@@ -137,7 +137,7 @@ class BatchOperationsTest extends TestCase
         $data = [];
         for ($i = 1; $i <= 100; $i++) {
             $data[] = [
-                'name' => "User {$i}",
+                'name'  => "User {$i}",
                 'email' => "user{$i}@example.com",
             ];
         }
@@ -152,14 +152,14 @@ class BatchOperationsTest extends TestCase
     }
 
     /**
-     * Test: Batch operations maintain data integrity
+     * Test: Batch operations maintain data integrity.
      */
     public function test_batch_maintains_data_integrity(): void
     {
         $users = [];
         for ($i = 1; $i <= 50; $i++) {
             $users[] = [
-                'name' => "User {$i}",
+                'name'  => "User {$i}",
                 'email' => "user{$i}@example.com",
             ];
         }
@@ -172,14 +172,14 @@ class BatchOperationsTest extends TestCase
 
         // Verify all users inserted correctly
         $this->assertEquals(50, DB::table('users')->count());
-        
+
         // Check first and last
         $this->assertDatabaseHas('users', ['name' => 'User 1']);
         $this->assertDatabaseHas('users', ['name' => 'User 50']);
     }
 
     /**
-     * Test: Performance comparison - transaction vs individual inserts
+     * Test: Performance comparison - transaction vs individual inserts.
      *
      * Note: This test documents expected behavior but doesn't assert performance
      * since timing can be unreliable in test environments
@@ -190,7 +190,7 @@ class BatchOperationsTest extends TestCase
         $start = microtime(true);
         for ($i = 1; $i <= 10; $i++) {
             DB::table('users')->insert([
-                'name' => "Individual {$i}",
+                'name'  => "Individual {$i}",
                 'email' => "individual{$i}@example.com",
             ]);
         }
@@ -204,7 +204,7 @@ class BatchOperationsTest extends TestCase
         DB::transaction(function () {
             for ($i = 1; $i <= 10; $i++) {
                 DB::table('users')->insert([
-                    'name' => "Batch {$i}",
+                    'name'  => "Batch {$i}",
                     'email' => "batch{$i}@example.com",
                 ]);
             }
@@ -216,18 +216,18 @@ class BatchOperationsTest extends TestCase
 
         // Performance note: In production, batch operations are typically 10x faster
         // Individual: ~{$individualTime}s, Batch: ~{$batchTime}s
-        $this->assertTrue(true, "Performance comparison complete");
+        $this->assertTrue(true, 'Performance comparison complete');
     }
 
     /**
-     * Test: Transaction with query builder operations
+     * Test: Transaction with query builder operations.
      */
     public function test_transaction_with_query_builder(): void
     {
         // Insert initial user
         DB::table('users')->insert([
-            'name' => 'John',
-            'email' => 'john@example.com',
+            'name'       => 'John',
+            'email'      => 'john@example.com',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

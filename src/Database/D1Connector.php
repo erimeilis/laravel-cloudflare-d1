@@ -2,18 +2,19 @@
 
 namespace EriMeilis\CloudflareD1\Database;
 
+use EriMeilis\CloudflareD1\Http\D1ApiClient;
 use Illuminate\Database\Connectors\Connector;
 use Illuminate\Database\Connectors\ConnectorInterface;
 use InvalidArgumentException;
 use PDO;
-use EriMeilis\CloudflareD1\Http\D1ApiClient;
 
 class D1Connector extends Connector implements ConnectorInterface
 {
     /**
-     * Establish a database connection
+     * Establish a database connection.
      *
-     * @param  array  $config  Connection configuration
+     * @param array $config Connection configuration
+     *
      * @return D1Pdo
      */
     public function connect(array $config): PDO
@@ -33,7 +34,7 @@ class D1Connector extends Connector implements ConnectorInterface
     }
 
     /**
-     * Validate connection configuration
+     * Validate connection configuration.
      *
      * @throws InvalidArgumentException
      */
@@ -51,14 +52,14 @@ class D1Connector extends Connector implements ConnectorInterface
     }
 
     /**
-     * Get the default PDO connection options
+     * Get the default PDO connection options.
      */
     public function getDefaultOptions(): array
     {
         return [
-            PDO::ATTR_CASE => PDO::CASE_NATURAL,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
+            PDO::ATTR_CASE              => PDO::CASE_NATURAL,
+            PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ORACLE_NULLS      => PDO::NULL_NATURAL,
             PDO::ATTR_STRINGIFY_FETCHES => false,
         ];
     }

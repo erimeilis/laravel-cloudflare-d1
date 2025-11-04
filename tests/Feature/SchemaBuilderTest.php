@@ -3,13 +3,13 @@
 namespace EriMeilis\CloudflareD1\Tests\Feature;
 
 use EriMeilis\CloudflareD1\Tests\TestCase;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class SchemaBuilderTest extends TestCase
 {
     /**
-     * Test: Create table with primary key
+     * Test: Create table with primary key.
      */
     public function test_can_create_table_with_primary_key(): void
     {
@@ -26,7 +26,7 @@ class SchemaBuilderTest extends TestCase
 
     /**
      * Test: Create table with foreign key constraint
-     * This was reported as problematic
+     * This was reported as problematic.
      */
     public function test_can_create_table_with_foreign_key(): void
     {
@@ -48,7 +48,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Foreign key constraint is actually enforced
+     * Test: Foreign key constraint is actually enforced.
      */
     public function test_foreign_key_constraint_is_enforced(): void
     {
@@ -65,7 +65,7 @@ class SchemaBuilderTest extends TestCase
 
         // Insert valid user
         \DB::table('users')->insert(['name' => 'John']);
-        
+
         // Should work - valid foreign key
         \DB::table('posts')->insert(['user_id' => 1, 'title' => 'First Post']);
         $this->assertDatabaseHas('posts', ['title' => 'First Post']);
@@ -76,7 +76,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Foreign key ON DELETE CASCADE works
+     * Test: Foreign key ON DELETE CASCADE works.
      */
     public function test_foreign_key_cascade_delete_works(): void
     {
@@ -103,7 +103,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Multiple foreign keys in same table
+     * Test: Multiple foreign keys in same table.
      */
     public function test_can_create_multiple_foreign_keys(): void
     {
@@ -131,7 +131,7 @@ class SchemaBuilderTest extends TestCase
 
     /**
      * Test: Drop table
-     * This was reported as problematic
+     * This was reported as problematic.
      */
     public function test_can_drop_table(): void
     {
@@ -148,7 +148,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Drop table if exists
+     * Test: Drop table if exists.
      */
     public function test_can_drop_table_if_exists(): void
     {
@@ -165,7 +165,7 @@ class SchemaBuilderTest extends TestCase
 
     /**
      * Test: Drop table with foreign key constraints
-     * This was problematic - need to drop child tables first
+     * This was problematic - need to drop child tables first.
      */
     public function test_can_drop_table_with_foreign_keys(): void
     {
@@ -190,7 +190,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Add column to existing table
+     * Test: Add column to existing table.
      */
     public function test_can_add_column_to_existing_table(): void
     {
@@ -208,7 +208,7 @@ class SchemaBuilderTest extends TestCase
 
     /**
      * Test: Drop column
-     * This was reported as problematic
+     * This was reported as problematic.
      */
     public function test_can_drop_column(): void
     {
@@ -229,7 +229,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Drop multiple columns at once
+     * Test: Drop multiple columns at once.
      */
     public function test_can_drop_multiple_columns(): void
     {
@@ -250,7 +250,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Rename column
+     * Test: Rename column.
      */
     public function test_can_rename_column(): void
     {
@@ -268,7 +268,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Column with default value
+     * Test: Column with default value.
      */
     public function test_can_create_column_with_default_value(): void
     {
@@ -280,14 +280,14 @@ class SchemaBuilderTest extends TestCase
         });
 
         \DB::table('users')->insert(['name' => 'John']);
-        
+
         $user = \DB::table('users')->first();
         $this->assertEquals(1, $user->active);
         $this->assertEquals(1, $user->role);
     }
 
     /**
-     * Test: Nullable columns
+     * Test: Nullable columns.
      */
     public function test_can_create_nullable_columns(): void
     {
@@ -303,7 +303,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Unique constraint
+     * Test: Unique constraint.
      */
     public function test_can_create_unique_constraint(): void
     {
@@ -320,7 +320,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Index creation
+     * Test: Index creation.
      */
     public function test_can_create_index(): void
     {
@@ -335,7 +335,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Composite unique constraint
+     * Test: Composite unique constraint.
      */
     public function test_can_create_composite_unique_constraint(): void
     {
@@ -356,7 +356,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Timestamps helper
+     * Test: Timestamps helper.
      */
     public function test_can_use_timestamps_helper(): void
     {
@@ -371,7 +371,7 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
-     * Test: Soft deletes
+     * Test: Soft deletes.
      */
     public function test_can_use_soft_deletes(): void
     {

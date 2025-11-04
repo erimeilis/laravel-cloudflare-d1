@@ -2,14 +2,14 @@
 
 namespace EriMeilis\CloudflareD1\Database;
 
-use Illuminate\Database\Connection;
 use EriMeilis\CloudflareD1\Database\Query\D1QueryGrammar;
 use EriMeilis\CloudflareD1\Database\Schema\D1SchemaGrammar;
+use Illuminate\Database\Connection;
 
 class D1Connection extends Connection
 {
     /**
-     * Get the default query grammar instance
+     * Get the default query grammar instance.
      */
     protected function getDefaultQueryGrammar(): D1QueryGrammar
     {
@@ -17,7 +17,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Get a schema builder instance for the connection
+     * Get a schema builder instance for the connection.
      */
     public function getSchemaBuilder(): \Illuminate\Database\Schema\Builder
     {
@@ -29,7 +29,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Get the default schema grammar instance
+     * Get the default schema grammar instance.
      */
     protected function getDefaultSchemaGrammar(): D1SchemaGrammar
     {
@@ -37,16 +37,16 @@ class D1Connection extends Connection
     }
 
     /**
-     * Get the default post processor instance
+     * Get the default post processor instance.
      */
     protected function getDefaultPostProcessor(): \Illuminate\Database\Query\Processors\Processor
     {
-        return new \Illuminate\Database\Query\Processors\Processor;
+        return new \Illuminate\Database\Query\Processors\Processor();
     }
 
     /**
      * Execute a PRAGMA statement
-     * D1/SQLite specific command for database configuration
+     * D1/SQLite specific command for database configuration.
      */
     public function pragma(string $name, mixed $value = null): mixed
     {
@@ -61,7 +61,7 @@ class D1Connection extends Connection
 
     /**
      * Enable foreign key constraints
-     * Critical for D1 as they're disabled by default in SQLite
+     * Critical for D1 as they're disabled by default in SQLite.
      */
     public function enableForeignKeyConstraints(): bool
     {
@@ -71,7 +71,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Disable foreign key constraints
+     * Disable foreign key constraints.
      */
     public function disableForeignKeyConstraints(): bool
     {
@@ -82,7 +82,7 @@ class D1Connection extends Connection
 
     /**
      * Run an insert statement against the database
-     * Override to convert bulk inserts to raw SQL to bypass D1's 100 parameter limit
+     * Override to convert bulk inserts to raw SQL to bypass D1's 100 parameter limit.
      */
     public function insert($query, $bindings = []): bool
     {
@@ -97,12 +97,12 @@ class D1Connection extends Connection
 
     /**
      * Check if this is a bulk INSERT statement
-     * Handles: INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts
+     * Handles: INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts.
      */
     protected function isBulkInsert(string $sql, array $bindings): bool
     {
         // Must be INSERT statement (with optional OR IGNORE/OR REPLACE)
-        if (! preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+/i', $sql)) {
+        if (!preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+/i', $sql)) {
             return false;
         }
 
@@ -114,12 +114,12 @@ class D1Connection extends Connection
 
     /**
      * Execute bulk INSERT using raw SQL to leverage D1's 100KB limit
-     * Handles INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts with ON CONFLICT
+     * Handles INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts with ON CONFLICT.
      */
     protected function insertUsingRawSql(string $sql, array $bindings): bool
     {
         // Extract INSERT type, table name, columns, and any ON CONFLICT clause
-        if (! preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+?)(\s+ON\s+CONFLICT\s+.+)?$/is', $sql, $matches)) {
+        if (!preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+?)(\s+ON\s+CONFLICT\s+.+)?$/is', $sql, $matches)) {
             // Fallback to parent if pattern doesn't match
             return parent::insert($sql, $bindings);
         }
@@ -154,7 +154,7 @@ class D1Connection extends Connection
             $valueRowSize = strlen($valueRow);
 
             // If adding this row would exceed max SQL size, execute current batch
-            if ($currentBatchSize + $valueRowSize > $maxSqlSize && ! empty($valueRows)) {
+            if ($currentBatchSize + $valueRowSize > $maxSqlSize && !empty($valueRows)) {
                 $rawSql = sprintf(
                     'INSERT %sINTO %s (%s) VALUES %s%s',
                     $insertType ? $insertType.' ' : '',
@@ -175,7 +175,7 @@ class D1Connection extends Connection
         }
 
         // Execute remaining rows
-        if (! empty($valueRows)) {
+        if (!empty($valueRows)) {
             $rawSql = sprintf(
                 'INSERT %sINTO %s (%s) VALUES %s%s',
                 $insertType ? $insertType.' ' : '',
@@ -192,7 +192,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Escape a value for use in raw SQL (SQLite-compatible)
+     * Escape a value for use in raw SQL (SQLite-compatible).
      */
     protected function escapeValue(mixed $value): string
     {
@@ -213,7 +213,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Get the driver name
+     * Get the driver name.
      */
     public function getDriverName(): string
     {
@@ -222,7 +222,7 @@ class D1Connection extends Connection
 
     /**
      * Get the database connection server version
-     * D1 uses SQLite, report a compatible version
+     * D1 uses SQLite, report a compatible version.
      */
     public function getServerVersion(): string
     {

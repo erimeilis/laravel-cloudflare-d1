@@ -3,12 +3,12 @@
 namespace EriMeilis\CloudflareD1\Tests\Feature;
 
 use EriMeilis\CloudflareD1\Tests\TestCase;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
- * Performance Benchmark Tests
+ * Performance Benchmark Tests.
  *
  * These tests measure and document the performance improvements
  * achieved through query batching in transactions.
@@ -40,7 +40,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: 10 sequential INSERTs without transaction
+     * Benchmark: 10 sequential INSERTs without transaction.
      *
      * This simulates the worst-case scenario where each INSERT
      * is a separate API call.
@@ -51,9 +51,9 @@ class PerformanceBenchmarkTest extends TestCase
 
         for ($i = 1; $i <= 10; $i++) {
             DB::table('benchmark_users')->insert([
-                'name' => "User {$i}",
-                'email' => "user{$i}@example.com",
-                'age' => 20 + $i,
+                'name'       => "User {$i}",
+                'email'      => "user{$i}@example.com",
+                'age'        => 20 + $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -67,7 +67,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: 10 INSERTs with transaction (batched)
+     * Benchmark: 10 INSERTs with transaction (batched).
      *
      * This demonstrates the power of batching - all 10 INSERTs
      * are sent as a single API call.
@@ -79,9 +79,9 @@ class PerformanceBenchmarkTest extends TestCase
         DB::transaction(function () {
             for ($i = 1; $i <= 10; $i++) {
                 DB::table('benchmark_users')->insert([
-                    'name' => "User {$i}",
-                    'email' => "user{$i}@example.com",
-                    'age' => 20 + $i,
+                    'name'       => "User {$i}",
+                    'email'      => "user{$i}@example.com",
+                    'age'        => 20 + $i,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -96,7 +96,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: 50 INSERTs without transaction
+     * Benchmark: 50 INSERTs without transaction.
      */
     public function test_benchmark_50_sequential_inserts(): void
     {
@@ -104,9 +104,9 @@ class PerformanceBenchmarkTest extends TestCase
 
         for ($i = 1; $i <= 50; $i++) {
             DB::table('benchmark_users')->insert([
-                'name' => "User {$i}",
-                'email' => "user{$i}@example.com",
-                'age' => 20 + $i,
+                'name'       => "User {$i}",
+                'email'      => "user{$i}@example.com",
+                'age'        => 20 + $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -120,7 +120,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: 50 INSERTs with transaction
+     * Benchmark: 50 INSERTs with transaction.
      */
     public function test_benchmark_50_batched_inserts(): void
     {
@@ -129,9 +129,9 @@ class PerformanceBenchmarkTest extends TestCase
         DB::transaction(function () {
             for ($i = 1; $i <= 50; $i++) {
                 DB::table('benchmark_users')->insert([
-                    'name' => "User {$i}",
-                    'email' => "user{$i}@example.com",
-                    'age' => 20 + $i,
+                    'name'       => "User {$i}",
+                    'email'      => "user{$i}@example.com",
+                    'age'        => 20 + $i,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -146,7 +146,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: Mixed operations (INSERT + UPDATE + SELECT) without transaction
+     * Benchmark: Mixed operations (INSERT + UPDATE + SELECT) without transaction.
      */
     public function test_benchmark_mixed_operations_sequential(): void
     {
@@ -155,9 +155,9 @@ class PerformanceBenchmarkTest extends TestCase
         // Insert 20 users
         for ($i = 1; $i <= 20; $i++) {
             DB::table('benchmark_users')->insert([
-                'name' => "User {$i}",
-                'email' => "user{$i}@example.com",
-                'age' => 20,
+                'name'       => "User {$i}",
+                'email'      => "user{$i}@example.com",
+                'age'        => 20,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -182,7 +182,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: Mixed operations with transaction (batched)
+     * Benchmark: Mixed operations with transaction (batched).
      */
     public function test_benchmark_mixed_operations_batched(): void
     {
@@ -192,9 +192,9 @@ class PerformanceBenchmarkTest extends TestCase
             // Insert 20 users
             for ($i = 1; $i <= 20; $i++) {
                 DB::table('benchmark_users')->insert([
-                    'name' => "User {$i}",
-                    'email' => "user{$i}@example.com",
-                    'age' => 20,
+                    'name'       => "User {$i}",
+                    'email'      => "user{$i}@example.com",
+                    'age'        => 20,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -220,7 +220,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: Large batch INSERT (100 rows)
+     * Benchmark: Large batch INSERT (100 rows).
      */
     public function test_benchmark_large_batch_insert(): void
     {
@@ -229,9 +229,9 @@ class PerformanceBenchmarkTest extends TestCase
         DB::transaction(function () {
             for ($i = 1; $i <= 100; $i++) {
                 DB::table('benchmark_users')->insert([
-                    'name' => "User {$i}",
-                    'email' => "user{$i}@example.com",
-                    'age' => 20 + ($i % 50),
+                    'name'       => "User {$i}",
+                    'email'      => "user{$i}@example.com",
+                    'age'        => 20 + ($i % 50),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -246,16 +246,16 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Benchmark: Bulk INSERT using single query (most efficient)
+     * Benchmark: Bulk INSERT using single query (most efficient).
      */
     public function test_benchmark_bulk_insert_single_query(): void
     {
         $data = [];
         for ($i = 1; $i <= 100; $i++) {
             $data[] = [
-                'name' => "User {$i}",
-                'email' => "user{$i}@example.com",
-                'age' => 20 + ($i % 50),
+                'name'       => "User {$i}",
+                'email'      => "user{$i}@example.com",
+                'age'        => 20 + ($i % 50),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -273,7 +273,7 @@ class PerformanceBenchmarkTest extends TestCase
     }
 
     /**
-     * Summary test: Compare all approaches
+     * Summary test: Compare all approaches.
      *
      * This test runs all benchmarks and prints a comparison table.
      * Not a real test, but useful for documentation.

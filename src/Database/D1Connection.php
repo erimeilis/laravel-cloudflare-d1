@@ -97,11 +97,12 @@ class D1Connection extends Connection
 
     /**
      * Check if this is a bulk INSERT statement
+     * Handles: INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts
      */
     protected function isBulkInsert(string $sql, array $bindings): bool
     {
-        // Must be INSERT statement
-        if (! preg_match('/^\s*INSERT\s+INTO\s+/i', $sql)) {
+        // Must be INSERT statement (with optional OR IGNORE/OR REPLACE)
+        if (! preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+/i', $sql)) {
             return false;
         }
 
@@ -113,17 +114,20 @@ class D1Connection extends Connection
 
     /**
      * Execute bulk INSERT using raw SQL to leverage D1's 100KB limit
+     * Handles INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts with ON CONFLICT
      */
     protected function insertUsingRawSql(string $sql, array $bindings): bool
     {
-        // Extract table name and columns
-        if (! preg_match('/^\s*INSERT\s+INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
+        // Extract INSERT type, table name, columns, and any ON CONFLICT clause
+        if (! preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+?)(\s+ON\s+CONFLICT\s+.+)?$/is', $sql, $matches)) {
             // Fallback to parent if pattern doesn't match
             return parent::insert($sql, $bindings);
         }
 
-        $tableName = $matches[1];
-        $columns = $matches[2];
+        $insertType = trim($matches[1] ?? ''); // OR IGNORE or OR REPLACE
+        $tableName = $matches[3];
+        $columns = $matches[4];
+        $onConflict = $matches[6] ?? ''; // ON CONFLICT clause for upserts
 
         // Count columns to determine rows
         $columnCount = substr_count($columns, ',') + 1;
@@ -152,10 +156,12 @@ class D1Connection extends Connection
             // If adding this row would exceed max SQL size, execute current batch
             if ($currentBatchSize + $valueRowSize > $maxSqlSize && ! empty($valueRows)) {
                 $rawSql = sprintf(
-                    'INSERT INTO %s (%s) VALUES %s',
+                    'INSERT %sINTO %s (%s) VALUES %s%s',
+                    $insertType ? $insertType.' ' : '',
                     $tableName,
                     $columns,
-                    implode(', ', $valueRows)
+                    implode(', ', $valueRows),
+                    $onConflict
                 );
 
                 $this->statement($rawSql);
@@ -171,10 +177,12 @@ class D1Connection extends Connection
         // Execute remaining rows
         if (! empty($valueRows)) {
             $rawSql = sprintf(
-                'INSERT INTO %s (%s) VALUES %s',
+                'INSERT %sINTO %s (%s) VALUES %s%s',
+                $insertType ? $insertType.' ' : '',
                 $tableName,
                 $columns,
-                implode(', ', $valueRows)
+                implode(', ', $valueRows),
+                $onConflict
             );
 
             return $this->statement($rawSql);

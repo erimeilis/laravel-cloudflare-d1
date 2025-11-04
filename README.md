@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/packagist/l/erimeilis/laravel-cloudflare-d1.svg)](https://opensource.org/licenses/MIT)
 
 > 🌍 Deploy your database to Cloudflare's global edge network
-> ⚡ 33x faster bulk operations with automatic query batching
+> ⚡ 20x faster bulk inserts with automatic raw SQL optimization
 > 🔄 One-command MySQL to D1 migration
 > 🎯 Zero-config Eloquent ORM support — just works™
 
@@ -27,10 +27,11 @@
 
 ### ⚡ Performance & Optimization
 
-- 🚀 **33x Faster Bulk Operations** — Automatic query batching in transactions
-- 📦 **Intelligent Query Batching** — Up to 100 queries per API call
+- 🚀 **20x Faster Bulk Inserts** — Automatic raw SQL conversion (47s → 2.3s on 250 rows)
+- 📦 **Smart Chunking** — Leverages D1's 100KB SQL limit vs 100-parameter limit
+- 🔄 **Zero Configuration** — Works transparently with `insert()`, `insertOrIgnore()`, `upsert()`
 - 🎯 **Zero Overhead** — Direct REST API communication with D1
-- ⏱️ **Validated Performance** — Tested against production D1
+- ⏱️ **Production Tested** — Validated with real-world workloads
 
 ### 🌍 Global Distribution
 

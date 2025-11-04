@@ -6,7 +6,7 @@ use PDO;
 use RuntimeException;
 
 /**
- * DataExporter - Extract data from MySQL database for migration to D1
+ * DataExporter - Extract data from MySQL database for migration to D1.
  *
  * Features:
  * - Chunked data export for memory efficiency
@@ -25,20 +25,20 @@ class DataExporter
     protected int $maxParameters = 100;
 
     /**
-     * Progress callback function
+     * Progress callback function.
      *
      * @var callable|null
      */
     protected $progressCallback = null;
 
     /**
-     * Create a new DataExporter instance
+     * Create a new DataExporter instance.
      *
-     * @param  string  $host  MySQL host
-     * @param  string  $database  Database name
-     * @param  string  $username  Username
-     * @param  string  $password  Password
-     * @param  int  $port  Port (default 3306)
+     * @param string $host     MySQL host
+     * @param string $database Database name
+     * @param string $username Username
+     * @param string $password Password
+     * @param int    $port     Port (default 3306)
      */
     public function __construct(
         string $host,
@@ -51,7 +51,7 @@ class DataExporter
 
         try {
             $this->pdo = new PDO($dsn, $username, $password, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
         } catch (\PDOException $e) {
@@ -60,7 +60,7 @@ class DataExporter
     }
 
     /**
-     * Set chunk size for data export
+     * Set chunk size for data export.
      */
     public function setChunkSize(int $size): self
     {
@@ -70,7 +70,7 @@ class DataExporter
     }
 
     /**
-     * Set maximum parameters per query
+     * Set maximum parameters per query.
      */
     public function setMaxParameters(int $max): self
     {
@@ -80,7 +80,7 @@ class DataExporter
     }
 
     /**
-     * Set progress callback
+     * Set progress callback.
      *
      * Callback receives: function(string $table, int $exported, int $total)
      */
@@ -92,7 +92,7 @@ class DataExporter
     }
 
     /**
-     * Get list of all tables in the database
+     * Get list of all tables in the database.
      */
     public function getTables(): array
     {
@@ -102,7 +102,7 @@ class DataExporter
     }
 
     /**
-     * Get table structure (CREATE TABLE statement)
+     * Get table structure (CREATE TABLE statement).
      */
     public function getTableStructure(string $table): string
     {
@@ -115,7 +115,7 @@ class DataExporter
     }
 
     /**
-     * Get table row count
+     * Get table row count.
      */
     public function getTableCount(string $table): int
     {
@@ -126,7 +126,7 @@ class DataExporter
     }
 
     /**
-     * Get table column information
+     * Get table column information.
      */
     public function getTableColumns(string $table): array
     {
@@ -137,7 +137,7 @@ class DataExporter
     }
 
     /**
-     * Export all data from a table in chunks
+     * Export all data from a table in chunks.
      *
      * @return \Generator Yields arrays of rows
      */
@@ -177,7 +177,7 @@ class DataExporter
     }
 
     /**
-     * Export table data optimized for batch INSERT
+     * Export table data optimized for batch INSERT.
      *
      * Automatically splits into batches that respect the parameter limit
      *
@@ -204,14 +204,14 @@ class DataExporter
             foreach ($batches as $batch) {
                 yield [
                     'columns' => $columns,
-                    'rows' => $batch,
+                    'rows'    => $batch,
                 ];
             }
         }
     }
 
     /**
-     * Get primary key column name
+     * Get primary key column name.
      */
     protected function getPrimaryKey(string $table): ?string
     {
@@ -224,7 +224,7 @@ class DataExporter
     }
 
     /**
-     * Convert row data from MySQL to SQLite-compatible format
+     * Convert row data from MySQL to SQLite-compatible format.
      */
     protected function convertRowData(array $row): array
     {
@@ -251,7 +251,7 @@ class DataExporter
     }
 
     /**
-     * Quote identifier (table or column name)
+     * Quote identifier (table or column name).
      */
     protected function quoteIdentifier(string $identifier): string
     {
@@ -259,7 +259,7 @@ class DataExporter
     }
 
     /**
-     * Export entire database structure and data
+     * Export entire database structure and data.
      *
      * @return array ['tables' => [...], 'total_rows' => int]
      */
@@ -267,17 +267,17 @@ class DataExporter
     {
         $tables = $this->getTables();
         $export = [
-            'tables' => [],
+            'tables'     => [],
             'total_rows' => 0,
         ];
 
         foreach ($tables as $table) {
             $tableData = [
-                'name' => $table,
+                'name'      => $table,
                 'structure' => $this->getTableStructure($table),
-                'columns' => array_column($this->getTableColumns($table), 'Field'),
+                'columns'   => array_column($this->getTableColumns($table), 'Field'),
                 'row_count' => $this->getTableCount($table),
-                'data' => [],
+                'data'      => [],
             ];
 
             // Export all data
@@ -293,7 +293,7 @@ class DataExporter
     }
 
     /**
-     * Export database metadata only (no data)
+     * Export database metadata only (no data).
      */
     public function exportMetadata(): array
     {
@@ -302,9 +302,9 @@ class DataExporter
 
         foreach ($tables as $table) {
             $metadata[$table] = [
-                'name' => $table,
+                'name'      => $table,
                 'structure' => $this->getTableStructure($table),
-                'columns' => array_column($this->getTableColumns($table), 'Field'),
+                'columns'   => array_column($this->getTableColumns($table), 'Field'),
                 'row_count' => $this->getTableCount($table),
             ];
         }
@@ -313,7 +313,7 @@ class DataExporter
     }
 
     /**
-     * Validate connection and database access
+     * Validate connection and database access.
      */
     public function validate(): bool
     {
@@ -327,7 +327,7 @@ class DataExporter
     }
 
     /**
-     * Get the PDO connection
+     * Get the PDO connection.
      */
     public function getPdo(): PDO
     {
@@ -335,7 +335,7 @@ class DataExporter
     }
 
     /**
-     * Close the database connection
+     * Close the database connection.
      */
     public function close(): void
     {

@@ -5,17 +5,16 @@ namespace EriMeilis\CloudflareD1\Database\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Grammars\SQLiteGrammar;
 use Illuminate\Support\Fluent;
-use Illuminate\Database\Connection;
 
 class D1SchemaGrammar extends SQLiteGrammar
 {
     /**
      * D1 uses SQLite schema syntax, so we extend SQLite schema grammar
-     * This provides automatic compatibility with SQLite DDL statements
+     * This provides automatic compatibility with SQLite DDL statements.
      */
 
     /**
-     * Compile the command to enable foreign key constraints
+     * Compile the command to enable foreign key constraints.
      */
     public function compileEnableForeignKeyConstraints(): string
     {
@@ -23,7 +22,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile the command to disable foreign key constraints
+     * Compile the command to disable foreign key constraints.
      */
     public function compileDisableForeignKeyConstraints(): string
     {
@@ -31,7 +30,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a create table command
+     * Compile a create table command.
      */
     public function compileCreate(Blueprint $blueprint, Fluent $command): string
     {
@@ -48,7 +47,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile an add column command
+     * Compile an add column command.
      *
      * Note: SQLite has limited ALTER TABLE support
      * Adding multiple columns requires multiple statements
@@ -61,7 +60,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Get the SQL for a "autoincrement" column modifier
+     * Get the SQL for a "autoincrement" column modifier.
      */
     protected function modifyIncrement(Blueprint $blueprint, Fluent $column): ?string
     {
@@ -73,7 +72,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a drop table command
+     * Compile a drop table command.
      */
     public function compileDrop(Blueprint $blueprint, Fluent $command): string
     {
@@ -81,7 +80,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a drop table (if exists) command
+     * Compile a drop table (if exists) command.
      */
     public function compileDropIfExists(Blueprint $blueprint, Fluent $command): string
     {
@@ -89,9 +88,9 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile the SQL needed to drop all tables
+     * Compile the SQL needed to drop all tables.
      *
-     * @param  string|null  $schema
+     * @param string|null $schema
      */
     public function compileDropAllTables($schema = null): string
     {
@@ -99,7 +98,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a rename table command
+     * Compile a rename table command.
      */
     public function compileRename(Blueprint $blueprint, Fluent $command): string
     {
@@ -109,7 +108,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a string type
+     * Create the column definition for a string type.
      */
     protected function typeString(Fluent $column): string
     {
@@ -118,7 +117,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a text type
+     * Create the column definition for a text type.
      */
     protected function typeText(Fluent $column): string
     {
@@ -126,7 +125,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a big integer type
+     * Create the column definition for a big integer type.
      */
     protected function typeBigInteger(Fluent $column): string
     {
@@ -134,7 +133,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for an integer type
+     * Create the column definition for an integer type.
      */
     protected function typeInteger(Fluent $column): string
     {
@@ -142,7 +141,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a float type
+     * Create the column definition for a float type.
      */
     protected function typeFloat(Fluent $column): string
     {
@@ -150,7 +149,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a double type
+     * Create the column definition for a double type.
      */
     protected function typeDouble(Fluent $column): string
     {
@@ -158,7 +157,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a decimal type
+     * Create the column definition for a decimal type.
      *
      * Note: SQLite stores DECIMAL as REAL, precision may be lost
      */
@@ -168,7 +167,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a boolean type
+     * Create the column definition for a boolean type.
      */
     protected function typeBoolean(Fluent $column): string
     {
@@ -176,7 +175,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a date type
+     * Create the column definition for a date type.
      */
     protected function typeDate(Fluent $column): string
     {
@@ -184,7 +183,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a date-time type
+     * Create the column definition for a date-time type.
      */
     protected function typeDateTime(Fluent $column): string
     {
@@ -192,7 +191,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a timestamp type
+     * Create the column definition for a timestamp type.
      */
     protected function typeTimestamp(Fluent $column): string
     {
@@ -204,7 +203,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a JSON type
+     * Create the column definition for a JSON type.
      */
     protected function typeJson(Fluent $column): string
     {
@@ -212,7 +211,7 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a JSONB type
+     * Create the column definition for a JSONB type.
      */
     protected function typeJsonb(Fluent $column): string
     {
@@ -220,20 +219,20 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Append the foreign keys to the table definition
+     * Append the foreign keys to the table definition.
      *
-     * @param  array  $foreignKeys
+     * @param array $foreignKeys
      */
     protected function addForeignKeys($foreignKeys): ?string
     {
         return collect($foreignKeys)->reduce(function ($sql, $foreign) {
             $sql .= $this->getForeignKey($foreign);
 
-            if (! is_null($foreign->onDelete)) {
+            if (!is_null($foreign->onDelete)) {
                 $sql .= " on delete {$foreign->onDelete}";
             }
 
-            if (! is_null($foreign->onUpdate)) {
+            if (!is_null($foreign->onUpdate)) {
                 $sql .= " on update {$foreign->onUpdate}";
             }
 
@@ -242,9 +241,10 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Get the SQL for a foreign key constraint
+     * Get the SQL for a foreign key constraint.
      *
-     * @param  \Illuminate\Support\Fluent  $foreign
+     * @param \Illuminate\Support\Fluent $foreign
+     *
      * @return string
      */
     protected function getForeignKey($foreign)

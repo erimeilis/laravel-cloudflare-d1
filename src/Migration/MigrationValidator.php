@@ -2,11 +2,10 @@
 
 namespace EriMeilis\CloudflareD1\Migration;
 
-use EriMeilis\CloudflareD1\Http\D1ApiClient;
 use PDO;
 
 /**
- * MigrationValidator - Validate MySQL to D1 migration integrity
+ * MigrationValidator - Validate MySQL to D1 migration integrity.
  *
  * Features:
  * - Table count verification
@@ -24,7 +23,7 @@ class MigrationValidator
     protected array $validationResults = [];
 
     /**
-     * Create a new MigrationValidator instance
+     * Create a new MigrationValidator instance.
      */
     public function __construct(DataExporter $exporter, DataImporter $importer)
     {
@@ -33,21 +32,21 @@ class MigrationValidator
     }
 
     /**
-     * Validate entire migration
+     * Validate entire migration.
      *
-     * @param  array  $tables  Tables to validate (null = all tables)
+     * @param array $tables Tables to validate (null = all tables)
      */
     public function validate(?array $tables = null): array
     {
         $this->validationResults = [
-            'overall_status' => 'pending',
-            'tables_validated' => 0,
-            'tables_passed' => 0,
-            'tables_failed' => 0,
-            'total_source_rows' => 0,
+            'overall_status'         => 'pending',
+            'tables_validated'       => 0,
+            'tables_passed'          => 0,
+            'tables_failed'          => 0,
+            'total_source_rows'      => 0,
             'total_destination_rows' => 0,
-            'discrepancies' => [],
-            'table_results' => [],
+            'discrepancies'          => [],
+            'table_results'          => [],
         ];
 
         // Get tables to validate
@@ -71,9 +70,9 @@ class MigrationValidator
             $this->validationResults['total_source_rows'] += $result['source_count'];
             $this->validationResults['total_destination_rows'] += $result['destination_count'];
 
-            if (! empty($result['errors'])) {
+            if (!empty($result['errors'])) {
                 $this->validationResults['discrepancies'][] = [
-                    'table' => $table,
+                    'table'  => $table,
                     'errors' => $result['errors'],
                 ];
             }
@@ -92,22 +91,22 @@ class MigrationValidator
     }
 
     /**
-     * Validate a single table
+     * Validate a single table.
      */
     public function validateTable(string $table): array
     {
         $result = [
-            'table' => $table,
-            'status' => 'passed',
-            'source_count' => 0,
+            'table'             => $table,
+            'status'            => 'passed',
+            'source_count'      => 0,
             'destination_count' => 0,
-            'errors' => [],
-            'warnings' => [],
+            'errors'            => [],
+            'warnings'          => [],
         ];
 
         try {
             // Check if table exists in D1
-            if (! $this->importer->tableExists($table)) {
+            if (!$this->importer->tableExists($table)) {
                 $result['status'] = 'failed';
                 $result['errors'][] = 'Table does not exist in D1';
 
@@ -130,12 +129,12 @@ class MigrationValidator
             if ($sourceCount > 0) {
                 $sampleValidation = $this->validateSampleData($table);
 
-                if (! $sampleValidation['valid']) {
+                if (!$sampleValidation['valid']) {
                     $result['status'] = 'failed';
                     $result['errors'] = array_merge($result['errors'], $sampleValidation['errors']);
                 }
 
-                if (! empty($sampleValidation['warnings'])) {
+                if (!empty($sampleValidation['warnings'])) {
                     $result['warnings'] = array_merge($result['warnings'], $sampleValidation['warnings']);
                 }
             }
@@ -148,7 +147,7 @@ class MigrationValidator
     }
 
     /**
-     * Get row count from D1 table
+     * Get row count from D1 table.
      */
     protected function getD1TableCount(string $table): int
     {
@@ -164,13 +163,13 @@ class MigrationValidator
     }
 
     /**
-     * Validate sample data between MySQL and D1
+     * Validate sample data between MySQL and D1.
      */
     protected function validateSampleData(string $table, int $sampleSize = 10): array
     {
         $result = [
-            'valid' => true,
-            'errors' => [],
+            'valid'    => true,
+            'errors'   => [],
             'warnings' => [],
         ];
 
@@ -185,7 +184,7 @@ class MigrationValidator
             // Get primary key
             $primaryKey = $this->getPrimaryKeyColumn($table);
 
-            if (! $primaryKey) {
+            if (!$primaryKey) {
                 $result['warnings'][] = 'No primary key found - cannot validate specific rows';
 
                 return $result;
@@ -208,7 +207,7 @@ class MigrationValidator
                 // Compare row data
                 $comparison = $this->compareRows($mysqlRow, $d1Row);
 
-                if (! $comparison['match']) {
+                if (!$comparison['match']) {
                     $result['valid'] = false;
                     $result['errors'][] = "Row {$primaryKey}={$pkValue} data mismatch: {$comparison['details']}";
                 }
@@ -222,7 +221,7 @@ class MigrationValidator
     }
 
     /**
-     * Get sample rows from MySQL
+     * Get sample rows from MySQL.
      */
     protected function getMysqlSample(string $table, int $limit): array
     {
@@ -234,7 +233,7 @@ class MigrationValidator
     }
 
     /**
-     * Get primary key column name
+     * Get primary key column name.
      */
     protected function getPrimaryKeyColumn(string $table): ?string
     {
@@ -247,7 +246,7 @@ class MigrationValidator
     }
 
     /**
-     * Get a specific row from D1
+     * Get a specific row from D1.
      */
     protected function getD1Row(string $table, string $primaryKey, mixed $value): ?array
     {
@@ -268,14 +267,14 @@ class MigrationValidator
     }
 
     /**
-     * Compare two rows for equality
+     * Compare two rows for equality.
      */
     protected function compareRows(array $mysqlRow, array $d1Row): array
     {
         $mismatches = [];
 
         foreach ($mysqlRow as $column => $mysqlValue) {
-            if (! array_key_exists($column, $d1Row)) {
+            if (!array_key_exists($column, $d1Row)) {
                 $mismatches[] = "Column '{$column}' missing in D1";
 
                 continue;
@@ -296,13 +295,13 @@ class MigrationValidator
         }
 
         return [
-            'match' => empty($mismatches),
+            'match'   => empty($mismatches),
             'details' => implode(', ', $mismatches),
         ];
     }
 
     /**
-     * Normalize value for comparison
+     * Normalize value for comparison.
      */
     protected function normalizeValue(mixed $value): mixed
     {
@@ -334,7 +333,7 @@ class MigrationValidator
     }
 
     /**
-     * Get validation results
+     * Get validation results.
      */
     public function getResults(): array
     {
@@ -342,7 +341,7 @@ class MigrationValidator
     }
 
     /**
-     * Generate validation report
+     * Generate validation report.
      */
     public function generateReport(): string
     {
@@ -352,14 +351,14 @@ class MigrationValidator
         $report .= "║            Migration Validation Report                         ║\n";
         $report .= "╚════════════════════════════════════════════════════════════════╝\n\n";
 
-        $report .= "Overall Status: ".strtoupper($results['overall_status'])."\n";
+        $report .= 'Overall Status: '.strtoupper($results['overall_status'])."\n";
         $report .= "Tables Validated: {$results['tables_validated']}\n";
         $report .= "Tables Passed: {$results['tables_passed']}\n";
         $report .= "Tables Failed: {$results['tables_failed']}\n";
-        $report .= "Total Source Rows: ".number_format($results['total_source_rows'])."\n";
-        $report .= "Total Destination Rows: ".number_format($results['total_destination_rows'])."\n\n";
+        $report .= 'Total Source Rows: '.number_format($results['total_source_rows'])."\n";
+        $report .= 'Total Destination Rows: '.number_format($results['total_destination_rows'])."\n\n";
 
-        if (! empty($results['discrepancies'])) {
+        if (!empty($results['discrepancies'])) {
             $report .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
             $report .= "DISCREPANCIES FOUND:\n";
             $report .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -387,7 +386,7 @@ class MigrationValidator
     }
 
     /**
-     * Check if validation passed
+     * Check if validation passed.
      */
     public function passed(): bool
     {

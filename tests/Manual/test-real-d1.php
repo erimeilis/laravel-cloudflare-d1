@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 use EriMeilis\CloudflareD1\Http\D1ApiClient;
 
 /**
- * Real Cloudflare D1 Connection Test
+ * Real Cloudflare D1 Connection Test.
  *
  * This script tests the package with your actual Cloudflare D1 database.
  *
@@ -19,7 +19,6 @@ use EriMeilis\CloudflareD1\Http\D1ApiClient;
  *   CLOUDFLARE_D1_API_TOKEN=xxx
  *   php test-real-d1.php
  */
-
 echo "\n";
 echo "╔════════════════════════════════════════════════════════════════╗\n";
 echo "║          Laravel Cloudflare D1 - Real Connection Test          ║\n";
@@ -44,9 +43,9 @@ if (!$accountId || !$databaseId || !$apiToken) {
 }
 
 echo "📋 Configuration:\n";
-echo "   Account ID: " . substr($accountId, 0, 8) . "...\n";
-echo "   Database ID: " . substr($databaseId, 0, 8) . "...\n";
-echo "   API Token: " . substr($apiToken, 0, 8) . "...\n";
+echo '   Account ID: '.substr($accountId, 0, 8)."...\n";
+echo '   Database ID: '.substr($databaseId, 0, 8)."...\n";
+echo '   API Token: '.substr($apiToken, 0, 8)."...\n";
 echo "\n";
 
 try {
@@ -64,8 +63,8 @@ try {
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Query executed successfully!\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📊 Result: " . json_encode($result, JSON_PRETTY_PRINT) . "\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📊 Result: '.json_encode($result, JSON_PRETTY_PRINT)."\n\n";
 
     // Test 2: Create Table
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -74,7 +73,7 @@ try {
 
     // Drop table if exists
     try {
-        $apiClient->raw("DROP TABLE IF EXISTS test_users");
+        $apiClient->raw('DROP TABLE IF EXISTS test_users');
         echo "🗑️  Dropped existing test_users table\n";
     } catch (Exception $e) {
         // Table might not exist
@@ -93,7 +92,7 @@ try {
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Table created successfully!\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n\n";
 
     // Test 3: Insert Data (Sequential - Slow)
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -103,15 +102,15 @@ try {
     $start = microtime(true);
     for ($i = 1; $i <= 10; $i++) {
         $apiClient->raw(
-            "INSERT INTO test_users (name, email) VALUES (?, ?)",
+            'INSERT INTO test_users (name, email) VALUES (?, ?)',
             ["User {$i}", "user{$i}@example.com"]
         );
     }
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ 10 INSERTs completed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📈 Average per query: " . number_format($duration / 10, 2) . "ms\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📈 Average per query: '.number_format($duration / 10, 2)."ms\n\n";
 
     // Test 4: Batch Insert (Fast!)
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -121,8 +120,8 @@ try {
     $batchStatements = [];
     for ($i = 11; $i <= 20; $i++) {
         $batchStatements[] = [
-            'sql' => "INSERT INTO test_users (name, email) VALUES (?, ?)",
-            'params' => ["Batch User {$i}", "batch{$i}@example.com"]
+            'sql'    => 'INSERT INTO test_users (name, email) VALUES (?, ?)',
+            'params' => ["Batch User {$i}", "batch{$i}@example.com"],
         ];
     }
 
@@ -131,8 +130,8 @@ try {
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Batch INSERT completed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📈 Average per query: " . number_format($duration / 10, 2) . "ms\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📈 Average per query: '.number_format($duration / 10, 2)."ms\n\n";
 
     // Test 5: Query Data
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -140,13 +139,13 @@ try {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
     $start = microtime(true);
-    $result = $apiClient->raw("SELECT COUNT(*) as count FROM test_users");
+    $result = $apiClient->raw('SELECT COUNT(*) as count FROM test_users');
     $duration = (microtime(true) - $start) * 1000;
 
     $count = $result[0]['results']['rows'][0][0] ?? 0;
 
     echo "✅ Query executed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
     echo "📊 Total users: {$count}\n\n";
 
     // Test 6: Complex Query
@@ -155,12 +154,12 @@ try {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
     $start = microtime(true);
-    $result = $apiClient->raw("SELECT * FROM test_users WHERE id <= ? ORDER BY id", [5]);
+    $result = $apiClient->raw('SELECT * FROM test_users WHERE id <= ? ORDER BY id', [5]);
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Query executed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📊 Users found: " . count($result[0]['results']['rows']) . "\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📊 Users found: '.count($result[0]['results']['rows'])."\n";
     echo "📋 Sample data:\n";
     foreach (array_slice($result[0]['results']['rows'], 0, 3) as $row) {
         $columns = $result[0]['results']['columns'];
@@ -175,12 +174,12 @@ try {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
     $start = microtime(true);
-    $result = $apiClient->raw("UPDATE test_users SET name = ? WHERE id = ?", ["Updated User", 1]);
+    $result = $apiClient->raw('UPDATE test_users SET name = ? WHERE id = ?', ['Updated User', 1]);
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Update executed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📊 Rows affected: " . ($result[0]['meta']['rows_written'] ?? 0) . "\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📊 Rows affected: '.($result[0]['meta']['rows_written'] ?? 0)."\n\n";
 
     // Test 8: Delete
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
@@ -188,35 +187,34 @@ try {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
     $start = microtime(true);
-    $result = $apiClient->raw("DELETE FROM test_users WHERE id > ?", [15]);
+    $result = $apiClient->raw('DELETE FROM test_users WHERE id > ?', [15]);
     $duration = (microtime(true) - $start) * 1000;
 
     echo "✅ Delete executed\n";
-    echo "⏱️  Duration: " . number_format($duration, 2) . "ms\n";
-    echo "📊 Rows deleted: " . ($result[0]['meta']['rows_written'] ?? 0) . "\n\n";
+    echo '⏱️  Duration: '.number_format($duration, 2)."ms\n";
+    echo '📊 Rows deleted: '.($result[0]['meta']['rows_written'] ?? 0)."\n\n";
 
     // Cleanup
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
     echo "Cleanup\n";
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
 
-    $apiClient->raw("DROP TABLE test_users");
+    $apiClient->raw('DROP TABLE test_users');
     echo "🗑️  Test table dropped\n\n";
 
     echo "╔════════════════════════════════════════════════════════════════╗\n";
     echo "║                    ✅ All Tests Passed!                        ║\n";
     echo "╚════════════════════════════════════════════════════════════════╝\n";
     echo "\n";
-
 } catch (Exception $e) {
     echo "\n";
     echo "╔════════════════════════════════════════════════════════════════╗\n";
     echo "║                      ❌ Test Failed!                           ║\n";
     echo "╚════════════════════════════════════════════════════════════════╝\n";
     echo "\n";
-    echo "Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo 'Error: '.$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
     echo "\nStack trace:\n";
-    echo $e->getTraceAsString() . "\n";
+    echo $e->getTraceAsString()."\n";
     exit(1);
 }

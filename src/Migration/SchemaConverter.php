@@ -5,7 +5,7 @@ namespace EriMeilis\CloudflareD1\Migration;
 use RuntimeException;
 
 /**
- * SchemaConverter - Convert MySQL schemas to SQLite/D1 compatible schemas
+ * SchemaConverter - Convert MySQL schemas to SQLite/D1 compatible schemas.
  *
  * Handles:
  * - Data type mapping (INT → INTEGER, VARCHAR → TEXT, etc.)
@@ -18,64 +18,65 @@ use RuntimeException;
 class SchemaConverter
 {
     /**
-     * Data type mapping from MySQL to SQLite
+     * Data type mapping from MySQL to SQLite.
      */
     protected array $typeMap = [
         // Integer types
-        'TINYINT' => 'INTEGER',
-        'SMALLINT' => 'INTEGER',
+        'TINYINT'   => 'INTEGER',
+        'SMALLINT'  => 'INTEGER',
         'MEDIUMINT' => 'INTEGER',
-        'INT' => 'INTEGER',
-        'INTEGER' => 'INTEGER',
-        'BIGINT' => 'INTEGER',
+        'INT'       => 'INTEGER',
+        'INTEGER'   => 'INTEGER',
+        'BIGINT'    => 'INTEGER',
 
         // String types
-        'CHAR' => 'TEXT',
-        'VARCHAR' => 'TEXT',
-        'TINYTEXT' => 'TEXT',
-        'TEXT' => 'TEXT',
+        'CHAR'       => 'TEXT',
+        'VARCHAR'    => 'TEXT',
+        'TINYTEXT'   => 'TEXT',
+        'TEXT'       => 'TEXT',
         'MEDIUMTEXT' => 'TEXT',
-        'LONGTEXT' => 'TEXT',
+        'LONGTEXT'   => 'TEXT',
 
         // Numeric types
         'DECIMAL' => 'REAL',
         'NUMERIC' => 'REAL',
-        'FLOAT' => 'REAL',
-        'DOUBLE' => 'REAL',
-        'REAL' => 'REAL',
+        'FLOAT'   => 'REAL',
+        'DOUBLE'  => 'REAL',
+        'REAL'    => 'REAL',
 
         // Date/Time types
-        'DATE' => 'TEXT',
-        'DATETIME' => 'TEXT',
+        'DATE'      => 'TEXT',
+        'DATETIME'  => 'TEXT',
         'TIMESTAMP' => 'TEXT',
-        'TIME' => 'TEXT',
-        'YEAR' => 'TEXT',
+        'TIME'      => 'TEXT',
+        'YEAR'      => 'TEXT',
 
         // Binary types
-        'BINARY' => 'BLOB',
-        'VARBINARY' => 'BLOB',
-        'TINYBLOB' => 'BLOB',
-        'BLOB' => 'BLOB',
+        'BINARY'     => 'BLOB',
+        'VARBINARY'  => 'BLOB',
+        'TINYBLOB'   => 'BLOB',
+        'BLOB'       => 'BLOB',
         'MEDIUMBLOB' => 'BLOB',
-        'LONGBLOB' => 'BLOB',
+        'LONGBLOB'   => 'BLOB',
 
         // Other types
         'BOOLEAN' => 'INTEGER',
-        'BOOL' => 'INTEGER',
-        'JSON' => 'TEXT',
-        'ENUM' => 'TEXT', // Special handling required
-        'SET' => 'TEXT',  // Special handling required
+        'BOOL'    => 'INTEGER',
+        'JSON'    => 'TEXT',
+        'ENUM'    => 'TEXT', // Special handling required
+        'SET'     => 'TEXT',  // Special handling required
     ];
 
     /**
-     * Warnings generated during conversion
+     * Warnings generated during conversion.
      */
     protected array $warnings = [];
 
     /**
-     * Convert MySQL CREATE TABLE statement to SQLite
+     * Convert MySQL CREATE TABLE statement to SQLite.
      *
      * @param string $mysqlSql MySQL CREATE TABLE statement
+     *
      * @return string SQLite CREATE TABLE statement
      */
     public function convert(string $mysqlSql): string
@@ -90,7 +91,7 @@ class SchemaConverter
     }
 
     /**
-     * Get conversion warnings
+     * Get conversion warnings.
      */
     public function getWarnings(): array
     {
@@ -98,7 +99,7 @@ class SchemaConverter
     }
 
     /**
-     * Parse MySQL CREATE TABLE statement
+     * Parse MySQL CREATE TABLE statement.
      */
     public function parseCreateTable(string $sql): array
     {
@@ -163,17 +164,17 @@ class SchemaConverter
         }
 
         return [
-            'table' => $tableName,
-            'columns' => $columns,
-            'primary_key' => $primaryKey,
+            'table'        => $tableName,
+            'columns'      => $columns,
+            'primary_key'  => $primaryKey,
             'foreign_keys' => $foreignKeys,
-            'unique_keys' => $uniqueKeys,
-            'indexes' => $indexes,
+            'unique_keys'  => $uniqueKeys,
+            'indexes'      => $indexes,
         ];
     }
 
     /**
-     * Split definition by top-level commas (respecting parentheses)
+     * Split definition by top-level commas (respecting parentheses).
      */
     protected function splitDefinition(string $definition): array
     {
@@ -205,7 +206,7 @@ class SchemaConverter
     }
 
     /**
-     * Parse column definition
+     * Parse column definition.
      */
     protected function parseColumn(string $definition): ?array
     {
@@ -256,31 +257,31 @@ class SchemaConverter
                 // Keep as is
             } else {
                 // Quote string defaults
-                $default = "'" . str_replace("'", "''", $default) . "'";
+                $default = "'".str_replace("'", "''", $default)."'";
             }
         }
 
         return [
-            'name' => $name,
-            'type' => $sqliteType,
-            'size' => $size,
-            'not_null' => $notNull,
-            'default' => $default,
+            'name'           => $name,
+            'type'           => $sqliteType,
+            'size'           => $size,
+            'not_null'       => $notNull,
+            'default'        => $default,
             'auto_increment' => $autoIncrement,
-            'primary' => $primary,
-            'unique' => $unique,
-            'enum_values' => $enumValues,
+            'primary'        => $primary,
+            'unique'         => $unique,
+            'enum_values'    => $enumValues,
         ];
     }
 
     /**
-     * Parse PRIMARY KEY constraint
+     * Parse PRIMARY KEY constraint.
      */
     protected function parsePrimaryKey(string $definition): ?array
     {
         if (preg_match('/PRIMARY\s+KEY\s*\(([^)]+)\)/i', $definition, $matches)) {
             $columns = array_map(
-                fn($col) => trim($col, '` '),
+                fn ($col) => trim($col, '` '),
                 explode(',', $matches[1])
             );
 
@@ -291,7 +292,7 @@ class SchemaConverter
     }
 
     /**
-     * Parse FOREIGN KEY constraint
+     * Parse FOREIGN KEY constraint.
      */
     protected function parseForeignKey(string $definition): ?array
     {
@@ -299,9 +300,9 @@ class SchemaConverter
         $pattern = '/FOREIGN\s+KEY\s*\(([^)]+)\)\s*REFERENCES\s+`?(\w+)`?\s*\(([^)]+)\)(.*)/i';
 
         if (preg_match($pattern, $definition, $matches)) {
-            $columns = array_map(fn($col) => trim($col, '` '), explode(',', $matches[1]));
+            $columns = array_map(fn ($col) => trim($col, '` '), explode(',', $matches[1]));
             $refTable = $matches[2];
-            $refColumns = array_map(fn($col) => trim($col, '` '), explode(',', $matches[3]));
+            $refColumns = array_map(fn ($col) => trim($col, '` '), explode(',', $matches[3]));
             $actions = $matches[4] ?? '';
 
             $onDelete = null;
@@ -316,11 +317,11 @@ class SchemaConverter
             }
 
             return [
-                'columns' => $columns,
-                'ref_table' => $refTable,
+                'columns'     => $columns,
+                'ref_table'   => $refTable,
                 'ref_columns' => $refColumns,
-                'on_delete' => $onDelete,
-                'on_update' => $onUpdate,
+                'on_delete'   => $onDelete,
+                'on_update'   => $onUpdate,
             ];
         }
 
@@ -328,13 +329,13 @@ class SchemaConverter
     }
 
     /**
-     * Parse UNIQUE constraint
+     * Parse UNIQUE constraint.
      */
     protected function parseUniqueKey(string $definition): ?array
     {
         if (preg_match('/UNIQUE(?:\s+KEY|\s+INDEX)?\s*(?:`?\w+`?)?\s*\(([^)]+)\)/i', $definition, $matches)) {
             $columns = array_map(
-                fn($col) => trim($col, '` '),
+                fn ($col) => trim($col, '` '),
                 explode(',', $matches[1])
             );
 
@@ -345,14 +346,14 @@ class SchemaConverter
     }
 
     /**
-     * Parse INDEX
+     * Parse INDEX.
      */
     protected function parseIndex(string $definition): ?array
     {
         if (preg_match('/(?:KEY|INDEX)\s+`?(\w+)`?\s*\(([^)]+)\)/i', $definition, $matches)) {
             $name = $matches[1];
             $columns = array_map(
-                fn($col) => trim($col, '` '),
+                fn ($col) => trim($col, '` '),
                 explode(',', $matches[2])
             );
 
@@ -365,9 +366,9 @@ class SchemaConverter
             $unique = stripos($definition, 'UNIQUE') !== false;
 
             return [
-                'name' => $name,
+                'name'    => $name,
                 'columns' => $columns,
-                'unique' => $unique,
+                'unique'  => $unique,
             ];
         }
 
@@ -375,7 +376,7 @@ class SchemaConverter
     }
 
     /**
-     * Build SQLite CREATE TABLE statement
+     * Build SQLite CREATE TABLE statement.
      */
     protected function buildCreateTable(array $parsed): string
     {
@@ -392,7 +393,7 @@ class SchemaConverter
 
         // Add table-level PRIMARY KEY if not on a single column
         if ($parsed['primary_key'] && count($parsed['primary_key']['columns']) > 1) {
-            $cols = implode(', ', array_map(fn($c) => "`{$c}`", $parsed['primary_key']['columns']));
+            $cols = implode(', ', array_map(fn ($c) => "`{$c}`", $parsed['primary_key']['columns']));
             $lines[] = "PRIMARY KEY ({$cols})";
         }
 
@@ -403,17 +404,17 @@ class SchemaConverter
 
         // Add UNIQUE constraints
         foreach ($parsed['unique_keys'] as $uk) {
-            $cols = implode(', ', array_map(fn($c) => "`{$c}`", $uk['columns']));
+            $cols = implode(', ', array_map(fn ($c) => "`{$c}`", $uk['columns']));
             $lines[] = "UNIQUE ({$cols})";
         }
 
-        $sql = "CREATE TABLE `{$tableName}` (\n  " . implode(",\n  ", $lines) . "\n)";
+        $sql = "CREATE TABLE `{$tableName}` (\n  ".implode(",\n  ", $lines)."\n)";
 
         return $sql;
     }
 
     /**
-     * Build column definition
+     * Build column definition.
      */
     protected function buildColumnDefinition(array $column, ?array $primaryKey): string
     {
@@ -459,12 +460,12 @@ class SchemaConverter
     }
 
     /**
-     * Build FOREIGN KEY definition
+     * Build FOREIGN KEY definition.
      */
     protected function buildForeignKeyDefinition(array $fk): string
     {
-        $cols = implode(', ', array_map(fn($c) => "`{$c}`", $fk['columns']));
-        $refCols = implode(', ', array_map(fn($c) => "`{$c}`", $fk['ref_columns']));
+        $cols = implode(', ', array_map(fn ($c) => "`{$c}`", $fk['columns']));
+        $refCols = implode(', ', array_map(fn ($c) => "`{$c}`", $fk['ref_columns']));
 
         $parts = ["FOREIGN KEY ({$cols}) REFERENCES `{$fk['ref_table']}` ({$refCols})"];
 
@@ -480,7 +481,7 @@ class SchemaConverter
     }
 
     /**
-     * Generate index creation statements (separate from CREATE TABLE)
+     * Generate index creation statements (separate from CREATE TABLE).
      */
     public function buildIndexStatements(array $parsed): array
     {
@@ -489,7 +490,7 @@ class SchemaConverter
 
         foreach ($parsed['indexes'] as $index) {
             $indexName = $index['name'];
-            $cols = implode(', ', array_map(fn($c) => "`{$c}`", $index['columns']));
+            $cols = implode(', ', array_map(fn ($c) => "`{$c}`", $index['columns']));
             $unique = $index['unique'] ?? false;
 
             $createStmt = $unique ? 'CREATE UNIQUE INDEX' : 'CREATE INDEX';

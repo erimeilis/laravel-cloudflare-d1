@@ -8,13 +8,13 @@ class D1QueryGrammar extends SQLiteGrammar
 {
     /**
      * D1 uses SQLite syntax, so we extend SQLite grammar
-     * This provides automatic compatibility with SQLite query patterns
+     * This provides automatic compatibility with SQLite query patterns.
      *
      * Any D1-specific customizations can be added here
      */
 
     /**
-     * Compile an insert statement into SQL
+     * Compile an insert statement into SQL.
      */
     public function compileInsert(\Illuminate\Database\Query\Builder $query, array $values): string
     {
@@ -23,7 +23,7 @@ class D1QueryGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile an update statement into SQL
+     * Compile an update statement into SQL.
      */
     public function compileUpdate(\Illuminate\Database\Query\Builder $query, array $values): string
     {
@@ -32,7 +32,7 @@ class D1QueryGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile a delete statement into SQL
+     * Compile a delete statement into SQL.
      */
     public function compileDelete(\Illuminate\Database\Query\Builder $query): string
     {
@@ -41,9 +41,9 @@ class D1QueryGrammar extends SQLiteGrammar
     }
 
     /**
-     * Wrap a value in keyword identifiers
+     * Wrap a value in keyword identifiers.
      *
-     * @param  \Illuminate\Database\Query\Expression|string  $value
+     * @param \Illuminate\Database\Query\Expression|string $value
      */
     protected function wrapValue($value): string
     {

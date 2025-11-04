@@ -23,7 +23,7 @@ class QueryBatcher
     }
 
     /**
-     * Enable batching mode
+     * Enable batching mode.
      */
     public function enable(): void
     {
@@ -31,7 +31,7 @@ class QueryBatcher
     }
 
     /**
-     * Disable batching mode
+     * Disable batching mode.
      */
     public function disable(): void
     {
@@ -39,7 +39,7 @@ class QueryBatcher
     }
 
     /**
-     * Check if batching is enabled
+     * Check if batching is enabled.
      */
     public function isEnabled(): bool
     {
@@ -47,10 +47,11 @@ class QueryBatcher
     }
 
     /**
-     * Add a query to the batch
+     * Add a query to the batch.
      *
-     * @param  string  $sql  SQL query
-     * @param  array  $bindings  Parameter bindings
+     * @param string $sql      SQL query
+     * @param array  $bindings Parameter bindings
+     *
      * @return int Query index in the batch
      */
     public function add(string $sql, array $bindings = []): int
@@ -58,7 +59,7 @@ class QueryBatcher
         $queryId = count($this->queryBuffer);
 
         $this->queryBuffer[] = [
-            'sql' => $sql,
+            'sql'    => $sql,
             'params' => $bindings,
         ];
 
@@ -71,7 +72,7 @@ class QueryBatcher
     }
 
     /**
-     * Execute all batched queries as a single API call
+     * Execute all batched queries as a single API call.
      *
      * @return array Results indexed by query ID
      */
@@ -102,12 +103,13 @@ class QueryBatcher
             return $allResults;
         } catch (\Exception $e) {
             $this->queryBuffer = [];
+
             throw $e;
         }
     }
 
     /**
-     * Clear the query buffer without executing
+     * Clear the query buffer without executing.
      */
     public function clear(): void
     {
@@ -116,9 +118,10 @@ class QueryBatcher
     }
 
     /**
-     * Get results from last flush
+     * Get results from last flush.
      *
-     * @param  int  $queryId  Query ID from add() method
+     * @param int $queryId Query ID from add() method
+     *
      * @return array|null Result for specific query
      */
     public function getResult(int $queryId): ?array
@@ -127,7 +130,7 @@ class QueryBatcher
     }
 
     /**
-     * Get all results from last flush
+     * Get all results from last flush.
      */
     public function getAllResults(): array
     {
@@ -135,7 +138,7 @@ class QueryBatcher
     }
 
     /**
-     * Get the number of queries in the current batch
+     * Get the number of queries in the current batch.
      */
     public function count(): int
     {
@@ -143,9 +146,10 @@ class QueryBatcher
     }
 
     /**
-     * Chunk queries by parameter count to respect SQLite's 100 parameter limit
+     * Chunk queries by parameter count to respect SQLite's 100 parameter limit.
      *
-     * @param  array  $queries  Array of query statements
+     * @param array $queries Array of query statements
+     *
      * @return array Array of chunked query sets
      */
     protected function chunkByParameterCount(array $queries): array
@@ -161,7 +165,7 @@ class QueryBatcher
             // If single query exceeds limit, it needs special handling
             if ($paramCount > $maxParams) {
                 // Flush current chunk if any
-                if (! empty($currentChunk)) {
+                if (!empty($currentChunk)) {
                     $chunks[] = $currentChunk;
                     $currentChunk = [];
                     $currentParamCount = 0;
@@ -174,7 +178,7 @@ class QueryBatcher
             }
 
             // Check if adding this query would exceed the limit
-            if ($currentParamCount + $paramCount > $maxParams && ! empty($currentChunk)) {
+            if ($currentParamCount + $paramCount > $maxParams && !empty($currentChunk)) {
                 $chunks[] = $currentChunk;
                 $currentChunk = [];
                 $currentParamCount = 0;
@@ -185,7 +189,7 @@ class QueryBatcher
         }
 
         // Add remaining queries
-        if (! empty($currentChunk)) {
+        if (!empty($currentChunk)) {
             $chunks[] = $currentChunk;
         }
 
@@ -195,7 +199,7 @@ class QueryBatcher
     /**
      * Split a query with too many parameters into multiple queries
      * Primarily for bulk INSERT statements
-     * Uses raw SQL with escaped values to leverage D1's 100KB limit instead of 100 parameter limit
+     * Uses raw SQL with escaped values to leverage D1's 100KB limit instead of 100 parameter limit.
      */
     protected function splitLargeQuery(array $query, int $maxParams): array
     {
@@ -203,7 +207,7 @@ class QueryBatcher
         $params = $query['params'];
 
         // Check if it's a bulk INSERT
-        if (! preg_match('/^\s*INSERT\s+INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
+        if (!preg_match('/^\s*INSERT\s+INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
             // Not a bulk INSERT, return as single query and let D1 handle the error
             return [[$query]];
         }
@@ -239,7 +243,7 @@ class QueryBatcher
             $valueRowSize = strlen($valueRow);
 
             // If adding this row would exceed max SQL size, flush current batch
-            if ($currentBatchSize + $valueRowSize > $maxSqlSize && ! empty($valueRows)) {
+            if ($currentBatchSize + $valueRowSize > $maxSqlSize && !empty($valueRows)) {
                 $rawSql = sprintf(
                     'INSERT INTO %s (%s) VALUES %s',
                     $tableName,
@@ -248,7 +252,7 @@ class QueryBatcher
                 );
 
                 $queries[] = [[
-                    'sql' => $rawSql,
+                    'sql'    => $rawSql,
                     'params' => [], // No parameters for raw SQL
                 ]];
 
@@ -261,7 +265,7 @@ class QueryBatcher
         }
 
         // Add remaining rows
-        if (! empty($valueRows)) {
+        if (!empty($valueRows)) {
             $rawSql = sprintf(
                 'INSERT INTO %s (%s) VALUES %s',
                 $tableName,
@@ -270,7 +274,7 @@ class QueryBatcher
             );
 
             $queries[] = [[
-                'sql' => $rawSql,
+                'sql'    => $rawSql,
                 'params' => [], // No parameters for raw SQL
             ]];
         }
@@ -279,7 +283,7 @@ class QueryBatcher
     }
 
     /**
-     * Escape a value for use in raw SQL (SQLite-compatible)
+     * Escape a value for use in raw SQL (SQLite-compatible).
      */
     protected function escapeValue(mixed $value): string
     {
@@ -300,7 +304,7 @@ class QueryBatcher
     }
 
     /**
-     * Set maximum batch size
+     * Set maximum batch size.
      */
     public function setMaxBatchSize(int $size): void
     {
@@ -308,7 +312,7 @@ class QueryBatcher
     }
 
     /**
-     * Get maximum batch size
+     * Get maximum batch size.
      */
     public function getMaxBatchSize(): int
     {

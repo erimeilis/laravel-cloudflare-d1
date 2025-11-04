@@ -24,38 +24,39 @@ class D1ApiClient
         $this->databaseId = $databaseId;
         $this->apiToken = $apiToken;
         $this->httpClient = $httpClient ?? new Client([
-            'timeout' => 30,
+            'timeout'         => 30,
             'connect_timeout' => 10,
         ]);
     }
 
     /**
-     * Execute a single SQL query using the /query endpoint
+     * Execute a single SQL query using the /query endpoint.
      */
     public function query(string $sql, array $bindings = []): array
     {
         return $this->executeRequest('/query', [[
-            'sql' => $sql,
+            'sql'    => $sql,
             'params' => $bindings,
         ]]);
     }
 
     /**
      * Execute a single SQL query using the /raw endpoint (40-60% faster)
-     * Returns arrays instead of objects for better performance
+     * Returns arrays instead of objects for better performance.
      */
     public function raw(string $sql, array $bindings = []): array
     {
         return $this->executeRequest('/raw', [[
-            'sql' => $sql,
+            'sql'    => $sql,
             'params' => $bindings,
         ]]);
     }
 
     /**
-     * Execute multiple SQL statements in a single batch (10x performance improvement)
+     * Execute multiple SQL statements in a single batch (10x performance improvement).
      *
-     * @param  array  $statements  Array of ['sql' => string, 'params' => array]
+     * @param array $statements Array of ['sql' => string, 'params' => array]
+     *
      * @return array Results indexed by statement order
      */
     public function batch(array $statements): array
@@ -68,7 +69,7 @@ class D1ApiClient
     }
 
     /**
-     * Execute HTTP request to D1 API
+     * Execute HTTP request to D1 API.
      */
     protected function executeRequest(string $endpoint, array $statements): array
     {
@@ -88,7 +89,7 @@ class D1ApiClient
             $body = [
                 'sql' => $statements[0]['sql'],
             ];
-            if (! empty($statements[0]['params'])) {
+            if (!empty($statements[0]['params'])) {
                 $body['params'] = array_values($statements[0]['params']);
             }
         } else {
@@ -116,14 +117,14 @@ class D1ApiClient
             $response = $this->httpClient->post($url, [
                 'headers' => [
                     'Authorization' => 'Bearer '.$this->apiToken,
-                    'Content-Type' => 'application/json',
+                    'Content-Type'  => 'application/json',
                 ],
                 'json' => $body,
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
 
-            if (! $body['success'] ?? false) {
+            if (!$body['success'] ?? false) {
                 throw new RuntimeException(
                     'D1 API request failed: '.($body['errors'][0]['message'] ?? 'Unknown error')
                 );
@@ -140,7 +141,7 @@ class D1ApiClient
     }
 
     /**
-     * Get account ID
+     * Get account ID.
      */
     public function getAccountId(): string
     {
@@ -148,7 +149,7 @@ class D1ApiClient
     }
 
     /**
-     * Get database ID
+     * Get database ID.
      */
     public function getDatabaseId(): string
     {
@@ -156,7 +157,7 @@ class D1ApiClient
     }
 
     /**
-     * Bind parameters inline to SQL (for batch operations)
+     * Bind parameters inline to SQL (for batch operations).
      *
      * D1 REST API doesn't support parameters in batch mode, so we need to
      * bind them directly into the SQL string.
@@ -164,6 +165,7 @@ class D1ApiClient
     protected function bindParametersInline(string $sql, array $params): string
     {
         $position = 0;
+
         return preg_replace_callback('/\?/', function ($match) use ($params, &$position) {
             if (!isset($params[$position])) {
                 return $match[0];
@@ -185,7 +187,7 @@ class D1ApiClient
             }
 
             // String: escape single quotes and wrap in quotes
-            return "'" . str_replace("'", "''", (string) $value) . "'";
+            return "'".str_replace("'", "''", (string) $value)."'";
         }, $sql);
     }
 }

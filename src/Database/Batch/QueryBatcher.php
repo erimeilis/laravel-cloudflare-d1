@@ -195,6 +195,7 @@ class QueryBatcher
     /**
      * Split a query with too many parameters into multiple queries
      * Primarily for bulk INSERT statements
+     * Uses raw SQL with escaped values to leverage D1's 100KB limit instead of 100 parameter limit
      */
     protected function splitLargeQuery(array $query, int $maxParams): array
     {
@@ -202,7 +203,7 @@ class QueryBatcher
         $params = $query['params'];
 
         // Check if it's a bulk INSERT
-        if (! preg_match('/^\s*INSERT\s+INTO\s+(\w+)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
+        if (! preg_match('/^\s*INSERT\s+INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
             // Not a bulk INSERT, return as single query and let D1 handle the error
             return [[$query]];
         }
@@ -217,37 +218,85 @@ class QueryBatcher
             return [[$query]];
         }
 
-        // Calculate how many rows can fit in one query
-        $rowsPerQuery = (int) floor($maxParams / $columnCount);
+        // Convert to raw SQL approach: D1 supports 100KB of raw SQL vs only 100 parameters
+        // This allows MUCH larger batches (hundreds of rows instead of ~10)
+        $maxSqlSize = 95000; // 95KB to stay safely under 100KB limit
 
-        if ($rowsPerQuery === 0) {
-            // Single row has too many columns
-            return [[$query]];
+        // Build value rows with escaped values
+        $valueRows = [];
+        $currentBatchSize = 0;
+        $queries = [];
+
+        for ($i = 0; $i < count($params); $i += $columnCount) {
+            $rowValues = array_slice($params, $i, $columnCount);
+
+            // Escape and format values
+            $escapedValues = array_map(function ($value) {
+                return $this->escapeValue($value);
+            }, $rowValues);
+
+            $valueRow = '('.implode(', ', $escapedValues).')';
+            $valueRowSize = strlen($valueRow);
+
+            // If adding this row would exceed max SQL size, flush current batch
+            if ($currentBatchSize + $valueRowSize > $maxSqlSize && ! empty($valueRows)) {
+                $rawSql = sprintf(
+                    'INSERT INTO %s (%s) VALUES %s',
+                    $tableName,
+                    $columns,
+                    implode(', ', $valueRows)
+                );
+
+                $queries[] = [[
+                    'sql' => $rawSql,
+                    'params' => [], // No parameters for raw SQL
+                ]];
+
+                $valueRows = [];
+                $currentBatchSize = 0;
+            }
+
+            $valueRows[] = $valueRow;
+            $currentBatchSize += $valueRowSize;
         }
 
-        // Split parameters into chunks
-        $paramChunks = array_chunk($params, $rowsPerQuery * $columnCount);
-
-        $queries = [];
-        foreach ($paramChunks as $paramChunk) {
-            $rowCount = (int) (count($paramChunk) / $columnCount);
-            $valuePlaceholders = '('.implode(',', array_fill(0, $columnCount, '?')).')';
-            $allPlaceholders = implode(',', array_fill(0, $rowCount, $valuePlaceholders));
-
-            $newSql = sprintf(
+        // Add remaining rows
+        if (! empty($valueRows)) {
+            $rawSql = sprintf(
                 'INSERT INTO %s (%s) VALUES %s',
                 $tableName,
                 $columns,
-                $allPlaceholders
+                implode(', ', $valueRows)
             );
 
             $queries[] = [[
-                'sql' => $newSql,
-                'params' => $paramChunk,
+                'sql' => $rawSql,
+                'params' => [], // No parameters for raw SQL
             ]];
         }
 
-        return $queries;
+        return empty($queries) ? [[$query]] : $queries;
+    }
+
+    /**
+     * Escape a value for use in raw SQL (SQLite-compatible)
+     */
+    protected function escapeValue(mixed $value): string
+    {
+        if ($value === null) {
+            return 'NULL';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        // String escaping: SQLite uses single quotes and doubles single quotes for escaping
+        return "'".str_replace("'", "''", (string) $value)."'";
     }
 
     /**

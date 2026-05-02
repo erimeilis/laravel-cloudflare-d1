@@ -1,6 +1,6 @@
 {
     "name": "erimeilis/laravel-cloudflare-d1",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Production-ready Cloudflare D1 database driver for Laravel with full Eloquent support, 20x faster bulk inserts, and complete MySQL migration tooling",
     "keywords": [
         "laravel",

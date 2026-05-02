@@ -5,6 +5,11 @@ All notable changes to the Laravel Cloudflare D1 Driver will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-05-03
+
+### Fixed
+- **CI compatibility with Laravel 11** — Larastan static analysis was failing on Laravel 11 because `Grammar` parent class has no constructor in Laravel 11 but does in Laravel 12+. Added scoped `phpstan.neon` ignore rules; runtime behavior was already correct on all supported versions.
+
 ## [1.2.0] - 2026-05-03
 
 ### Added

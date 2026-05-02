@@ -12,3 +12,9 @@ parameters:
         - identifier: property.notFound
           path: src/Database/Schema/D1SchemaGrammar.php
           reportUnmatched: false
+        # Laravel 11's Grammar parent class has no constructor; Laravel 12+ requires Connection.
+        # The runtime call works on both (PHP silently ignores extra args on parameterless classes).
+        # Larastan correctly flags it on Laravel 11 only — ignore there, not unmatched on 12+.
+        - message: '#does not have a constructor and must be instantiated without any parameters#'
+          path: src/Database/D1Connection.php
+          reportUnmatched: false

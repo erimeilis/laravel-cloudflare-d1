@@ -130,9 +130,9 @@ class D1PdoStatement extends PDOStatement
             $this->results = is_array($rows) ? $rows : [];
         }
 
-        // Extract metadata
-        $this->rowCount = $result['results']['rows_written']
-            ?? $result['results']['rows_read']
+        // Extract metadata (D1 API puts rows_written/rows_read in 'meta', not 'results')
+        $this->rowCount = $result['meta']['rows_written']
+            ?? $result['meta']['rows_read']
             ?? count($this->results);
 
         // Handle last insert ID for INSERT statements
@@ -250,19 +250,28 @@ class D1PdoStatement extends PDOStatement
 
     /**
      * Convert named parameters (:param) to positional (?).
+     * Uses regex callback to ensure values are ordered by SQL appearance, not array key order.
      */
     protected function convertNamedToPositional(string $sql, array $bindings): array
     {
-        $values = [];
-        $newSql = $sql;
-
+        $normalized = [];
         foreach ($bindings as $key => $value) {
             if (is_string($key)) {
-                $placeholder = ':'.ltrim($key, ':');
-                $newSql = str_replace($placeholder, '?', $newSql);
-                $values[] = $value;
+                $normalized[':'.ltrim($key, ':')] = $value;
             }
         }
+
+        $values = [];
+        $newSql = preg_replace_callback('/:(\w+)/', function ($match) use ($normalized, &$values) {
+            $placeholder = ':'.$match[1];
+            if (array_key_exists($placeholder, $normalized)) {
+                $values[] = $normalized[$placeholder];
+
+                return '?';
+            }
+
+            return $match[0];
+        }, $sql);
 
         return [$newSql, $values];
     }

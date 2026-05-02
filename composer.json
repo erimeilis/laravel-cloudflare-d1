@@ -1,6 +1,6 @@
 {
     "name": "erimeilis/laravel-cloudflare-d1",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Production-ready Cloudflare D1 database driver for Laravel with full Eloquent support, 20x faster bulk inserts, and complete MySQL migration tooling",
     "keywords": [
         "laravel",
@@ -23,14 +23,15 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/database": "^11.0|^12.0",
-        "illuminate/support": "^11.0|^12.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
         "guzzlehttp/guzzle": "^7.8"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0|^10.0",
-        "phpunit/phpunit": "^11.0",
-        "mockery/mockery": "^1.6"
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^11.0|^12.0",
+        "mockery/mockery": "^1.6",
+        "larastan/larastan": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -52,6 +53,7 @@
     "scripts": {
         "test": "phpunit",
         "test-coverage": "phpunit --coverage-html coverage",
+        "analyse": "phpstan analyse --memory-limit=512M",
         "setup-local-d1": "./tests/setup-local-d1.sh"
     },
     "minimum-stability": "stable",

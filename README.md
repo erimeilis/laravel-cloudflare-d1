@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/erimeilis/laravel-cloudflare-d1.svg)](https://packagist.org/packages/erimeilis/laravel-cloudflare-d1)
 [![Tests](https://github.com/erimeilis/laravel-cloudflare-d1/actions/workflows/tests.yml/badge.svg)](https://github.com/erimeilis/laravel-cloudflare-d1/actions/workflows/tests.yml)
 [![PHP Version](https://img.shields.io/packagist/php-v/erimeilis/laravel-cloudflare-d1.svg)](https://packagist.org/packages/erimeilis/laravel-cloudflare-d1)
-[![Laravel 11+](https://img.shields.io/badge/Laravel-11%20%7C%2012-FF2D20.svg)](https://laravel.com)
+[![Laravel 11+](https://img.shields.io/badge/Laravel-11%20%7C%2012%20%7C%2013-FF2D20.svg)](https://laravel.com)
 [![License: MIT](https://img.shields.io/packagist/l/erimeilis/laravel-cloudflare-d1.svg)](https://opensource.org/licenses/MIT)
 
 > 🌍 Deploy your database to Cloudflare's global edge network
@@ -49,7 +49,7 @@
 
 ### 🔧 Developer Experience
 
-- 🎯 **Laravel 11 & 12 Compatible** — Tested with modern Laravel versions
+- 🎯 **Laravel 11, 12 & 13 Compatible** — Tested with modern Laravel versions
 - 🧪 **Full Test Coverage** — 57 automated tests, 100% passing
 - 📖 **Comprehensive Docs** — Every feature explained with examples
 - 💡 **Easy Setup** — 5-minute configuration, no complex setup
@@ -67,7 +67,7 @@ The package will automatically register via Laravel's package discovery.
 **Requirements:**
 
 - PHP 8.2 or higher
-- Laravel 11.x or 12.x
+- Laravel 11.x, 12.x, or 13.x
 - Cloudflare account (free tier works!)
 
 ---

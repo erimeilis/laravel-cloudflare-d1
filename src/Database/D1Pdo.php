@@ -200,4 +200,31 @@ class D1Pdo extends PDO
     {
         return $this->attributes[$attribute] ?? null;
     }
+
+    /**
+     * Quote a string for use in a query (SQLite-compatible).
+     * Required because parent PDO internals are not initialized.
+     */
+    public function quote(string $string, int $type = PDO::PARAM_STR): string|false
+    {
+        return "'".str_replace("'", "''", $string)."'";
+    }
+
+    /**
+     * Return the SQLSTATE error code.
+     * Required because parent PDO internals are not initialized.
+     */
+    public function errorCode(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Return extended error information.
+     * Required because parent PDO internals are not initialized.
+     */
+    public function errorInfo(): array
+    {
+        return ['00000', null, null];
+    }
 }

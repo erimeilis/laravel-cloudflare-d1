@@ -25,6 +25,14 @@ class DataImporter
     protected int $maxParameters = 100;
 
     /**
+     * Quote an identifier (table/column name) for safe SQL embedding.
+     */
+    protected function quoteIdentifier(string $identifier): string
+    {
+        return '`'.str_replace('`', '``', $identifier).'`';
+    }
+
+    /**
      * Progress callback function.
      *
      * @var callable|null
@@ -183,13 +191,13 @@ class DataImporter
             return;
         }
 
-        $columnList = implode(', ', array_map(fn ($col) => "`{$col}`", $columns));
+        $columnList = implode(', ', array_map(fn ($col) => $this->quoteIdentifier($col), $columns));
 
         $statements = [];
 
         foreach ($rows as $row) {
             $placeholders = implode(', ', array_fill(0, count($columns), '?'));
-            $sql = "INSERT INTO `{$table}` ({$columnList}) VALUES ({$placeholders})";
+            $sql = "INSERT INTO {$this->quoteIdentifier($table)} ({$columnList}) VALUES ({$placeholders})";
 
             $params = array_values($row);
 
@@ -310,7 +318,7 @@ class DataImporter
      */
     public function truncateTable(string $table): void
     {
-        $this->apiClient->raw("DELETE FROM `{$table}`");
+        $this->apiClient->raw("DELETE FROM {$this->quoteIdentifier($table)}");
 
         // Report progress
         if ($this->progressCallback) {
@@ -323,7 +331,7 @@ class DataImporter
      */
     public function dropTable(string $table): void
     {
-        $this->apiClient->raw("DROP TABLE IF EXISTS `{$table}`");
+        $this->apiClient->raw("DROP TABLE IF EXISTS {$this->quoteIdentifier($table)}");
 
         // Report progress
         if ($this->progressCallback) {

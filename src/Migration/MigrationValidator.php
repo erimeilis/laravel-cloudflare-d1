@@ -23,6 +23,14 @@ class MigrationValidator
     protected array $validationResults = [];
 
     /**
+     * Quote an identifier (table/column name) for safe SQL embedding.
+     */
+    protected function quoteIdentifier(string $identifier): string
+    {
+        return '`'.str_replace('`', '``', $identifier).'`';
+    }
+
+    /**
      * Create a new MigrationValidator instance.
      */
     public function __construct(DataExporter $exporter, DataImporter $importer)
@@ -151,7 +159,7 @@ class MigrationValidator
      */
     protected function getD1TableCount(string $table): int
     {
-        $result = $this->importer->getApiClient()->raw("SELECT COUNT(*) as count FROM `{$table}`");
+        $result = $this->importer->getApiClient()->raw("SELECT COUNT(*) as count FROM {$this->quoteIdentifier($table)}");
 
         $rows = $result[0]['results']['rows'] ?? [];
 
@@ -225,7 +233,7 @@ class MigrationValidator
      */
     protected function getMysqlSample(string $table, int $limit): array
     {
-        $sql = "SELECT * FROM `{$table}` LIMIT {$limit}";
+        $sql = "SELECT * FROM {$this->quoteIdentifier($table)} LIMIT {$limit}";
 
         $stmt = $this->exporter->getPdo()->query($sql);
 
@@ -237,7 +245,7 @@ class MigrationValidator
      */
     protected function getPrimaryKeyColumn(string $table): ?string
     {
-        $stmt = $this->exporter->getPdo()->prepare("SHOW KEYS FROM `{$table}` WHERE Key_name = 'PRIMARY'");
+        $stmt = $this->exporter->getPdo()->prepare("SHOW KEYS FROM {$this->quoteIdentifier($table)} WHERE Key_name = 'PRIMARY'");
         $stmt->execute();
 
         $result = $stmt->fetch();
@@ -251,7 +259,7 @@ class MigrationValidator
     protected function getD1Row(string $table, string $primaryKey, mixed $value): ?array
     {
         $result = $this->importer->getApiClient()->raw(
-            "SELECT * FROM `{$table}` WHERE `{$primaryKey}` = ? LIMIT 1",
+            "SELECT * FROM {$this->quoteIdentifier($table)} WHERE {$this->quoteIdentifier($primaryKey)} = ? LIMIT 1",
             [$value]
         );
 

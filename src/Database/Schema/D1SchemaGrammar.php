@@ -9,11 +9,6 @@ use Illuminate\Support\Fluent;
 class D1SchemaGrammar extends SQLiteGrammar
 {
     /**
-     * D1 uses SQLite schema syntax, so we extend SQLite schema grammar
-     * This provides automatic compatibility with SQLite DDL statements.
-     */
-
-    /**
      * Compile the command to enable foreign key constraints.
      */
     public function compileEnableForeignKeyConstraints(): string
@@ -48,9 +43,6 @@ class D1SchemaGrammar extends SQLiteGrammar
 
     /**
      * Compile an add column command.
-     *
-     * Note: SQLite has limited ALTER TABLE support
-     * Adding multiple columns requires multiple statements
      */
     public function compileAdd(Blueprint $blueprint, Fluent $command): string
     {
@@ -88,16 +80,6 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Compile the SQL needed to drop all tables.
-     *
-     * @param string|null $schema
-     */
-    public function compileDropAllTables($schema = null): string
-    {
-        return 'delete from sqlite_master where type in (\'table\', \'index\', \'trigger\')';
-    }
-
-    /**
      * Compile a rename table command.
      */
     public function compileRename(Blueprint $blueprint, Fluent $command): string
@@ -108,90 +90,8 @@ class D1SchemaGrammar extends SQLiteGrammar
     }
 
     /**
-     * Create the column definition for a string type.
-     */
-    protected function typeString(Fluent $column): string
-    {
-        // SQLite doesn't enforce length, but we preserve it for compatibility
-        return 'text';
-    }
-
-    /**
-     * Create the column definition for a text type.
-     */
-    protected function typeText(Fluent $column): string
-    {
-        return 'text';
-    }
-
-    /**
-     * Create the column definition for a big integer type.
-     */
-    protected function typeBigInteger(Fluent $column): string
-    {
-        return 'integer';
-    }
-
-    /**
-     * Create the column definition for an integer type.
-     */
-    protected function typeInteger(Fluent $column): string
-    {
-        return 'integer';
-    }
-
-    /**
-     * Create the column definition for a float type.
-     */
-    protected function typeFloat(Fluent $column): string
-    {
-        return 'real';
-    }
-
-    /**
-     * Create the column definition for a double type.
-     */
-    protected function typeDouble(Fluent $column): string
-    {
-        return 'real';
-    }
-
-    /**
-     * Create the column definition for a decimal type.
-     *
-     * Note: SQLite stores DECIMAL as REAL, precision may be lost
-     */
-    protected function typeDecimal(Fluent $column): string
-    {
-        return 'real';
-    }
-
-    /**
-     * Create the column definition for a boolean type.
-     */
-    protected function typeBoolean(Fluent $column): string
-    {
-        return 'integer';
-    }
-
-    /**
-     * Create the column definition for a date type.
-     */
-    protected function typeDate(Fluent $column): string
-    {
-        return 'text';
-    }
-
-    /**
-     * Create the column definition for a date-time type.
-     */
-    protected function typeDateTime(Fluent $column): string
-    {
-        return 'text';
-    }
-
-    /**
      * Create the column definition for a timestamp type.
+     * D1/SQLite stores timestamps as text with optional current datetime default.
      */
     protected function typeTimestamp(Fluent $column): string
     {
@@ -199,22 +99,6 @@ class D1SchemaGrammar extends SQLiteGrammar
             return 'text default (datetime(\'now\'))';
         }
 
-        return 'text';
-    }
-
-    /**
-     * Create the column definition for a JSON type.
-     */
-    protected function typeJson(Fluent $column): string
-    {
-        return 'text';
-    }
-
-    /**
-     * Create the column definition for a JSONB type.
-     */
-    protected function typeJsonb(Fluent $column): string
-    {
         return 'text';
     }
 
@@ -249,7 +133,6 @@ class D1SchemaGrammar extends SQLiteGrammar
      */
     protected function getForeignKey($foreign)
     {
-        // Wrap the columns and references
         $columns = $this->columnize((array) $foreign->columns);
         $on = $this->wrapTable($foreign->on);
         $references = $this->columnize((array) $foreign->references);

@@ -18,7 +18,7 @@ use RuntimeException;
  */
 class DataExporter
 {
-    protected PDO $pdo;
+    protected ?PDO $pdo = null;
 
     protected int $chunkSize = 1000;
 
@@ -64,6 +64,10 @@ class DataExporter
      */
     public function setChunkSize(int $size): self
     {
+        if ($size < 1) {
+            throw new \InvalidArgumentException('Chunk size must be at least 1');
+        }
+
         $this->chunkSize = $size;
 
         return $this;

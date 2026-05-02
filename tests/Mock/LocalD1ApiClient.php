@@ -18,6 +18,12 @@ class LocalD1ApiClient extends D1ApiClient
 
     public function __construct()
     {
+        // Initialize parent typed properties with dummy values to prevent TypeError
+        $this->accountId = 'local-test-account';
+        $this->databaseId = 'local-test-database';
+        $this->apiToken = 'local-test-token';
+        $this->httpClient = new \GuzzleHttp\Client();
+
         // Use shared in-memory SQLite database so data persists across queries
         if (self::$sharedPdo === null) {
             self::$sharedPdo = new PDO('sqlite::memory:');

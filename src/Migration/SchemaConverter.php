@@ -217,8 +217,8 @@ class SchemaConverter
 
         $name = $matches[1];
         $type = strtoupper($matches[2]);
-        $size = $matches[3] ?? null;
-        $modifiers = $matches[4] ?? '';
+        $size = $matches[3] ?: null;
+        $modifiers = $matches[4];
 
         // Handle ENUM specially
         $enumValues = null;
@@ -303,7 +303,7 @@ class SchemaConverter
             $columns = array_map(fn ($col) => trim($col, '` '), explode(',', $matches[1]));
             $refTable = $matches[2];
             $refColumns = array_map(fn ($col) => trim($col, '` '), explode(',', $matches[3]));
-            $actions = $matches[4] ?? '';
+            $actions = $matches[4];
 
             $onDelete = null;
             $onUpdate = null;

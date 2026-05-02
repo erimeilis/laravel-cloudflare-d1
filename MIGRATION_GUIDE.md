@@ -1,8 +1,8 @@
 # MySQL to Cloudflare D1 Migration Guide
 
 **Package**: `laravel-cloudflare-d1`
-**Version**: 1.0.0
-**Last Updated**: November 2025
+**Version**: 1.2.0
+**Last Updated**: May 2026
 
 Complete guide for migrating MySQL databases to Cloudflare D1 using Laravel.
 
@@ -57,7 +57,7 @@ The migration tooling provides a complete solution for migrating MySQL databases
     - Configured in Laravel `config/database.php`
 
 3. **Laravel Application**
-    - Laravel 11 or 12
+    - Laravel 11, 12, or 13
     - Package installed: `erimeilis/laravel-cloudflare-d1`
 
 ### Environment Setup
@@ -731,6 +731,6 @@ Convert in application layer
 
 ---
 
-**Last Updated**: November 2025
-**Package Version**: 1.0.0
-**Tested With**: Laravel 11, Laravel 12, MySQL 8.0, Cloudflare D1
+**Last Updated**: May 2026
+**Package Version**: 1.2.0
+**Tested With**: Laravel 11, Laravel 12, Laravel 13, MySQL 8.0, Cloudflare D1

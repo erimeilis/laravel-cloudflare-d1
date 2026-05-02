@@ -2,12 +2,14 @@
 
 namespace EriMeilis\CloudflareD1\Http;
 
+use EriMeilis\CloudflareD1\Database\Concerns\EscapesSqlValues;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use RuntimeException;
 
 class D1ApiClient
 {
+    use EscapesSqlValues;
     protected string $accountId;
 
     protected string $databaseId;
@@ -41,8 +43,7 @@ class D1ApiClient
     }
 
     /**
-     * Execute a single SQL query using the /raw endpoint (40-60% faster)
-     * Returns arrays instead of objects for better performance.
+     * Execute a single SQL query using the /raw endpoint (40-60% faster).
      */
     public function raw(string $sql, array $bindings = []): array
     {
@@ -124,7 +125,7 @@ class D1ApiClient
 
             $body = json_decode($response->getBody()->getContents(), true);
 
-            if (!$body['success'] ?? false) {
+            if (!($body['success'] ?? false)) {
                 throw new RuntimeException(
                     'D1 API request failed: '.($body['errors'][0]['message'] ?? 'Unknown error')
                 );
@@ -158,9 +159,6 @@ class D1ApiClient
 
     /**
      * Bind parameters inline to SQL (for batch operations).
-     *
-     * D1 REST API doesn't support parameters in batch mode, so we need to
-     * bind them directly into the SQL string.
      */
     protected function bindParametersInline(string $sql, array $params): string
     {
@@ -171,23 +169,7 @@ class D1ApiClient
                 return $match[0];
             }
 
-            $value = $params[$position++];
-
-            // Quote and escape based on type
-            if ($value === null) {
-                return 'NULL';
-            }
-
-            if (is_bool($value)) {
-                return $value ? '1' : '0';
-            }
-
-            if (is_int($value) || is_float($value)) {
-                return (string) $value;
-            }
-
-            // String: escape single quotes and wrap in quotes
-            return "'".str_replace("'", "''", (string) $value)."'";
+            return $this->escapeValue($params[$position++]);
         }, $sql);
     }
 }

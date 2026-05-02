@@ -49,7 +49,7 @@ Feature requests are welcome! Please open an issue with:
 ### Requirements
 - PHP 8.2+
 - Composer
-- Laravel 11 or 12
+- Laravel 11, 12, or 13
 
 ### Installation
 

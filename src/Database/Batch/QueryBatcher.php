@@ -2,10 +2,12 @@
 
 namespace EriMeilis\CloudflareD1\Database\Batch;
 
+use EriMeilis\CloudflareD1\Database\Concerns\EscapesSqlValues;
 use EriMeilis\CloudflareD1\Http\D1ApiClient;
 
 class QueryBatcher
 {
+    use EscapesSqlValues;
     protected D1ApiClient $apiClient;
 
     protected array $queryBuffer = [];
@@ -197,9 +199,7 @@ class QueryBatcher
     }
 
     /**
-     * Split a query with too many parameters into multiple queries
-     * Primarily for bulk INSERT statements
-     * Uses raw SQL with escaped values to leverage D1's 100KB limit instead of 100 parameter limit.
+     * Split a query with too many parameters into multiple queries.
      */
     protected function splitLargeQuery(array $query, int $maxParams): array
     {
@@ -207,7 +207,7 @@ class QueryBatcher
         $params = $query['params'];
 
         // Check if it's a bulk INSERT
-        if (!preg_match('/^\s*INSERT\s+INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
+        if (!preg_match('/^\s*INSERT\s+INTO\s+(["`]?\w+["`]?)\s*\((.*?)\)\s*VALUES\s*(.+)/is', $sql, $matches)) {
             // Not a bulk INSERT, return as single query and let D1 handle the error
             return [[$query]];
         }
@@ -215,12 +215,8 @@ class QueryBatcher
         $tableName = $matches[1];
         $columns = $matches[2];
 
-        // Count columns
+        // Count columns (always >= 1 since substr_count returns 0+ and we add 1)
         $columnCount = substr_count($columns, ',') + 1;
-
-        if ($columnCount === 0) {
-            return [[$query]];
-        }
 
         // Convert to raw SQL approach: D1 supports 100KB of raw SQL vs only 100 parameters
         // This allows MUCH larger batches (hundreds of rows instead of ~10)
@@ -280,27 +276,6 @@ class QueryBatcher
         }
 
         return empty($queries) ? [[$query]] : $queries;
-    }
-
-    /**
-     * Escape a value for use in raw SQL (SQLite-compatible).
-     */
-    protected function escapeValue(mixed $value): string
-    {
-        if ($value === null) {
-            return 'NULL';
-        }
-
-        if (is_int($value) || is_float($value)) {
-            return (string) $value;
-        }
-
-        if (is_bool($value)) {
-            return $value ? '1' : '0';
-        }
-
-        // String escaping: SQLite uses single quotes and doubles single quotes for escaping
-        return "'".str_replace("'", "''", (string) $value)."'";
     }
 
     /**

@@ -5,6 +5,44 @@ All notable changes to the Laravel Cloudflare D1 Driver will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-03
+
+### Added
+- **Laravel 13 Support** — Full compatibility with Laravel 13
+  - Added `illuminate/database:^13.0` and `illuminate/support:^13.0`
+  - Added Orchestra Testbench `^11.0` and PHPUnit `^12.0`
+  - CI matrix updated with PHP 8.3/8.4 + Laravel 13 test combinations
+- **D1SchemaBuilder** — Proper SQLite-specific schema builder extending `SQLiteBuilder`
+  - Gains `getTables()`, `getColumns()`, `getViews()`, `dropAllTables()`, `pragma()`
+- **SQLiteProcessor** — Proper column/index/foreign-key introspection
+- **EscapesSqlValues trait** — Unified SQL value escaping shared across classes
+- **Connection overrides** — `getDriverTitle()`, `isUniqueConstraintError()`, `escapeBinary()`
+- **D1Pdo safety overrides** — `quote()`, `errorCode()`, `errorInfo()`
+
+### Fixed
+- **Operator precedence bug** in D1ApiClient error handling (`!$body['success'] ?? false`)
+- **Named parameter binding order** — values now bind in SQL appearance order, not array key order
+- **rowCount() wrong path** — was reading from `results` instead of `meta` in D1 API response
+- **TypeError in DataExporter::close()** — non-nullable PDO property set to null
+- **SQL injection in pragma()** — public method now validates name and escapes value
+- **Infinite loop** — DataExporter::setChunkSize() now validates size >= 1
+- **Inconsistent identifier quoting** — DataImporter/MigrationValidator now escape backticks
+- **Regex table name matching** — INSERT parsing now matches backtick-quoted identifiers
+- **Uninitialized typed properties** in LocalD1ApiClient test mock
+- **Config wiring** — cloudflare-d1 config values now actually consumed by ServiceProvider
+
+### Changed
+- **D1QueryGrammar** — removed 3 dead pass-through methods
+- **D1SchemaGrammar** — removed 12 unnecessary type overrides identical to parent SQLiteGrammar
+- **D1SchemaGrammar** — removed broken `compileDropAllTables()` (parent handles it properly)
+- **escapeValue()** — extracted from 3 classes into shared trait with type validation
+
+### Migration Notes
+- **Behavior Fix**: `rowCount()` now returns correct values for INSERT/UPDATE/DELETE (previously returned 0). Code that depended on the broken `0` return must be updated.
+- **Behavior Fix**: Named parameter binding order corrected (previously bound values to wrong placeholders by array key order instead of SQL appearance order).
+- PHP requirement remains `^8.2` for Laravel 11/12 backward compatibility.
+- Laravel 13 requires PHP `^8.3` minimum; Composer enforces this automatically.
+
 ## [1.1.0] - 2025-11-04
 
 ### Added

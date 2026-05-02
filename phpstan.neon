@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src/
+    excludePaths:
+        - src/config/
+    level: 5
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        - identifier: property.notFound
+          path: src/Database/Schema/D1SchemaGrammar.php
+          reportUnmatched: false

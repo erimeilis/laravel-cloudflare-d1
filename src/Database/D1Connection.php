@@ -3,11 +3,15 @@
 namespace EriMeilis\CloudflareD1\Database;
 
 use EriMeilis\CloudflareD1\Database\Query\D1QueryGrammar;
+use EriMeilis\CloudflareD1\Database\Schema\D1SchemaBuilder;
 use EriMeilis\CloudflareD1\Database\Schema\D1SchemaGrammar;
 use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Processors\SQLiteProcessor;
 
 class D1Connection extends Connection
 {
+    use Concerns\EscapesSqlValues;
+
     /**
      * Get the default query grammar instance.
      */
@@ -19,13 +23,13 @@ class D1Connection extends Connection
     /**
      * Get a schema builder instance for the connection.
      */
-    public function getSchemaBuilder(): \Illuminate\Database\Schema\Builder
+    public function getSchemaBuilder(): D1SchemaBuilder
     {
         if (is_null($this->schemaGrammar)) {
             $this->useDefaultSchemaGrammar();
         }
 
-        return new \Illuminate\Database\Schema\Builder($this);
+        return new D1SchemaBuilder($this);
     }
 
     /**
@@ -39,19 +43,51 @@ class D1Connection extends Connection
     /**
      * Get the default post processor instance.
      */
-    protected function getDefaultPostProcessor(): \Illuminate\Database\Query\Processors\Processor
+    protected function getDefaultPostProcessor(): SQLiteProcessor
     {
-        return new \Illuminate\Database\Query\Processors\Processor();
+        return new SQLiteProcessor();
     }
 
     /**
-     * Execute a PRAGMA statement
-     * D1/SQLite specific command for database configuration.
+     * Get the driver title for display purposes.
+     */
+    public function getDriverTitle(): string
+    {
+        return 'Cloudflare D1';
+    }
+
+    /**
+     * Determine if the given database exception was caused by a unique constraint violation.
+     */
+    protected function isUniqueConstraintError(\Exception $exception): bool
+    {
+        return (bool) preg_match('#(column(s)? .* (is|are) not unique|UNIQUE constraint failed: .*)#i', $exception->getMessage());
+    }
+
+    /**
+     * Escape a binary value for safe SQL embedding.
+     */
+    protected function escapeBinary($value): string
+    {
+        $hex = bin2hex($value);
+
+        return "x'{$hex}'";
+    }
+
+    /**
+     * Execute a PRAGMA statement.
      */
     public function pragma(string $name, mixed $value = null): mixed
     {
+        if (!preg_match('/^[a-zA-Z_]\w*$/', $name)) {
+            throw new \InvalidArgumentException("Invalid PRAGMA name: {$name}");
+        }
+
         if ($value !== null) {
-            $this->statement("PRAGMA {$name} = {$value}");
+            $safeValue = is_int($value) || is_float($value)
+                ? (string) $value
+                : "'".str_replace("'", "''", (string) $value)."'";
+            $this->statement("PRAGMA {$name} = {$safeValue}");
 
             return null;
         }
@@ -60,8 +96,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Enable foreign key constraints
-     * Critical for D1 as they're disabled by default in SQLite.
+     * Enable foreign key constraints.
      */
     public function enableForeignKeyConstraints(): bool
     {
@@ -81,8 +116,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Run an insert statement against the database
-     * Override to convert bulk inserts to raw SQL to bypass D1's 100 parameter limit.
+     * Run an insert statement against the database.
      */
     public function insert($query, $bindings = []): bool
     {
@@ -96,8 +130,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Check if this is a bulk INSERT statement
-     * Handles: INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts.
+     * Check if this is a bulk INSERT statement.
      */
     protected function isBulkInsert(string $sql, array $bindings): bool
     {
@@ -113,18 +146,17 @@ class D1Connection extends Connection
     }
 
     /**
-     * Execute bulk INSERT using raw SQL to leverage D1's 100KB limit
-     * Handles INSERT, INSERT OR IGNORE, INSERT OR REPLACE, and upserts with ON CONFLICT.
+     * Execute bulk INSERT using raw SQL to leverage D1's 100KB limit.
      */
     protected function insertUsingRawSql(string $sql, array $bindings): bool
     {
         // Extract INSERT type, table name, columns, and any ON CONFLICT clause
-        if (!preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+("?\w+"?)\s*\((.*?)\)\s*VALUES\s*(.+?)(\s+ON\s+CONFLICT\s+.+)?$/is', $sql, $matches)) {
+        if (!preg_match('/^\s*INSERT\s+(OR\s+(IGNORE|REPLACE)\s+)?INTO\s+(["`]?\w+["`]?)\s*\((.*?)\)\s*VALUES\s*(.+?)(\s+ON\s+CONFLICT\s+.+)?$/is', $sql, $matches)) {
             // Fallback to parent if pattern doesn't match
             return parent::insert($sql, $bindings);
         }
 
-        $insertType = trim($matches[1] ?? ''); // OR IGNORE or OR REPLACE
+        $insertType = trim($matches[1]); // OR IGNORE or OR REPLACE
         $tableName = $matches[3];
         $columns = $matches[4];
         $onConflict = $matches[6] ?? ''; // ON CONFLICT clause for upserts
@@ -132,7 +164,7 @@ class D1Connection extends Connection
         // Count columns to determine rows
         $columnCount = substr_count($columns, ',') + 1;
 
-        if ($columnCount === 0 || count($bindings) % $columnCount !== 0) {
+        if (count($bindings) % $columnCount !== 0) {
             // Fallback if we can't determine structure
             return parent::insert($sql, $bindings);
         }
@@ -192,27 +224,6 @@ class D1Connection extends Connection
     }
 
     /**
-     * Escape a value for use in raw SQL (SQLite-compatible).
-     */
-    protected function escapeValue(mixed $value): string
-    {
-        if ($value === null) {
-            return 'NULL';
-        }
-
-        if (is_int($value) || is_float($value)) {
-            return (string) $value;
-        }
-
-        if (is_bool($value)) {
-            return $value ? '1' : '0';
-        }
-
-        // String escaping: SQLite uses single quotes and doubles single quotes for escaping
-        return "'".str_replace("'", "''", (string) $value)."'";
-    }
-
-    /**
      * Get the driver name.
      */
     public function getDriverName(): string
@@ -221,8 +232,7 @@ class D1Connection extends Connection
     }
 
     /**
-     * Get the database connection server version
-     * D1 uses SQLite, report a compatible version.
+     * Get the database connection server version.
      */
     public function getServerVersion(): string
     {
